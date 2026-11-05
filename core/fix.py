@@ -1,8 +1,8 @@
-"""core.fix -- Paper B (12500): post-hoc de-centering of within-task heads.
+"""core.fix -- post-hoc de-centering of within-task heads (companion paper, Def 7.1).
 
 Status: IMPLEMENTED by H02, 2026-10-21. Replaces the G09 skeleton placeholder
-(whose docstring mislabeled this module "Paper A"; the binding architecture is
-G01 log section 3: fix.py is B-ONLY, Def 7.1 de-centering + gap recovery).
+(the binding architecture is G01 log section 3: Def 7.1 de-centering + gap
+recovery).
 
 Spec anchors (all quoted, none re-derived here):
 - G03 SPEC 3 (N1000_INIT_2026-10-21/exec/G03_log.md):
@@ -26,7 +26,7 @@ Spec anchors (all quoted, none re-derived here):
     additions per logit; Sigma^{-1} mu_bar^{(t)} precomputable once per task.
     The oft-quoted "1,925 scalars" is this line instantiated at the 20NG
     config (d=384 at TeX L2719, T=5 per G03 SPEC 9): 5*(384+1) = 1925.
-- G06 E3 (working/paper_B/exec/G06_log.md): exact Bayes-match verification
+- G06 E3 (companion G06 log): exact Bayes-match verification
   design; recovery ratio R = (err_WT - err_FIX)/(err_WT - err_Bayes); paper
   context (quoted only): real-data gap recovery 82-94%, mean 90.5% (G03
   SPEC 8, TeX L750-781). Synthetic ratios produced by this module are their

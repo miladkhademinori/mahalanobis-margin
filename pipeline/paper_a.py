@@ -21,7 +21,7 @@ Protocol summary (paper appendices; see the function docstrings):
                    clipped SGD with the Prop 5.1 schedule; "ours_classil": the same loop on the CE over the
                    classes seen so far, kept as the alternative reading of the pseudocode) with the
                    frozen-feature baselines (sequential head, joint head, within-task AdamW head with and
-                   without Paper B's de-centering, SLDA, NCM, FeCAM-style, RanPAC-style)
+                   without the de-centering fix, SLDA, NCM, FeCAM-style, RanPAC-style)
 """
 from __future__ import annotations
 

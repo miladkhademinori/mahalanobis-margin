@@ -98,8 +98,8 @@ def test_notebook_cells_compile(nb):
 def test_cli_parses_every_subcommand():
     import replicate
     parser = replicate.build_parser()
-    for argv in (["features", "--paper", "A"], ["--device", "numpy", "analyze", "--paper", "AB", "--optimizer", "lbfgs", "--ranpac-M", "100"],
-                 ["tables"], ["drift", "--lrs", "1e-5"], ["nonvision", "--allow-download"], ["synthetic", "--run", "--quick"], ["selftest", "--skip-ecf"]):
+    for argv in (["features", "--paper", "A"], ["--device", "numpy", "analyze", "--paper", "A", "--optimizer", "lbfgs", "--ranpac-M", "100"],
+                 ["tables"], ["drift", "--lrs", "1e-5"], ["synthetic", "--run", "--quick"], ["selftest", "--skip-ecf"]):
         a = parser.parse_args(argv)
         assert callable(a.fn)
 

@@ -1,10 +1,10 @@
-"""core.diagnostic -- Paper B bias-direction and kappa diagnostics.
+"""core.diagnostic -- bias-direction and kappa diagnostics (companion paper).
 
 Status: IMPLEMENTED by H04 (repo-implementation wave), 2026-10-21, replacing the
 G09 skeleton. Spec sources (read-only):
   - N1000_INIT_2026-10-21/exec/G03_log.md SPEC 4 (diagnostic on released
     checkpoints) and SPEC 6 (kappa, Assumption 6.1), extracted from
-    working/paper_B/neurips_2026.tex anchors: DeltaW_ij (L2072, L882), cosine in
+    the companion paper's TeX anchors: DeltaW_ij (L2072, L882), cosine in
     the Sigma_hat^{-1} inner product (L2073-2075), relative magnitude + cross-pair
     CV (tab:bias-direction caption L2529), per-pair kappa_hat = sqrt(D_hat/gamma)
     (L1085, L2077), mean aggregation in tab:diagnostic vs min in the body (L879),

@@ -1,6 +1,6 @@
-"""pipeline.tables -- LaTeX table bodies for both papers and the paper-vs-reproduced diff.
+"""pipeline.tables -- LaTeX table bodies for the paper and the paper-vs-reproduced diff.
 
-Every emitter reads only the JSON written by ``paper_a.run_all`` / ``paper_b.run_all``
+Every emitter reads only the JSON written by ``paper_a.run_all``
 and writes ``tables/out/<label>.tex`` (the tabular rows, ready to paste between the
 paper's \\toprule and \\bottomrule) plus ``tables/out/DIFF.md``, which lists every
 printed number next to the reproduced one.  Synthetic-provenance results are
@@ -117,7 +117,7 @@ def tab_method_comparison(A: dict) -> str:
     lines = [_mark(A)]
     rows = [("sequential_head", "Sequential head (lower, frozen features)"), ("joint", "Joint training (upper)"),
             ("slda", "SLDA"), ("ncm", "SimpleCIL / NCM"), ("fecam", "FeCAM-style"), ("ranpac", "RanPAC-style"),
-            ("within_task", "Within-task softmax (AdamW)"), ("within_task_fix", "Within-task + de-centering (Paper B, Def 7.1)"),
+            ("within_task", "Within-task softmax (AdamW)"), ("within_task_fix", "Within-task + de-centering (post-hoc fix)"),
             ("ours", "Diagnostic-guided clipped SGD (ours; diagonal head, Alg. 1)"), ("ours_fix", "ours + de-centering"),
             ("ours_classil", "ours, class-IL reading (CE over seen classes)")]
     for key, label in rows:
@@ -140,71 +140,10 @@ def predictor_text(A: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Paper B
-# ---------------------------------------------------------------------------
-
-def tab_fix_benchmark(B: dict) -> str:
-    lines = [_mark(B)]
-    for (b, d) in R.PAPER_B_BENCHMARK_ROWS:
-        r = B["benchmark"].get(f"{b}|{d}")
-        if not r: lines.append(f"{R.BACKBONES[b].label} & {R.DATASETS[d].label} & -- & -- & -- & (not run) \\\\"); continue
-        wt, fx, j = r["WT"]["mean"], r["FIX"]["mean"], r["J"]["mean"]
-        order = ("WT $<$ FIX $\\approx$ J" if fx > wt and abs(j - fx) < 0.02 else ("WT $<$ FIX $<$ J" if fx > wt else "ordering not observed"))
-        fix_cell = f"$\\mathbf{{{fx*100:.1f} \\pm {r['FIX']['sd']*100:.1f}}}$" if fx > wt else _pm(r["FIX"], 100)   # bold only when the fix helps
-        lines.append(f"{R.BACKBONES[b].label} & {R.DATASETS[d].label} & {_pm(r['WT'],100)} & {fix_cell} & {_pm(r['J'],100)} & {order} "
-                     f"\\\\ % FIX_c (scale-matched diagnostic) {_pm(r['FIX_c'],100)}, head scale {r['head_scale']['mean']:.2f}")
-    return "\n".join(lines)
-
-
-def tab_lda_ncm(B: dict) -> str:
-    lines = [_mark(B)]
-    for (b, d) in R.PAPER_B_BENCHMARK_ROWS:
-        r = B["benchmark"].get(f"{b}|{d}")
-        if not r: lines.append(f"{R.BACKBONES[b].label} & {R.DATASETS[d].label} & -- & -- & -- & -- \\\\"); continue
-        lines.append(f"{R.BACKBONES[b].label} & {R.DATASETS[d].label} & {_pm(r['WT'],100)} & {_pm(r['FIX'],100)} & {_pm(r['LDA'],100)} & {_pm(r['NCM'],100)} \\\\")
-    return "\n".join(lines)
-
-
-def tab_bias_direction(B: dict) -> str:
-    lines = [_mark(B), "% columns: backbone, dataset, per-pair cosine, per-pair relative magnitude, cross-pair CV, [paper-averaged cosine = gauge identity, gauge residual]"]
-    for key, r in B["bias_direction"].items():
-        b, d = key.split("|")
-        lines.append(f"{R.BACKBONES[b].label} & {R.DATASETS[d].label} & {_pm(r['pair_cos_mean'], nd=2)} & {_pm(r['pair_rel_mean'], nd=2)} & {_pm(r['cv'], nd=2)} "
-                     f"\\\\ % averaged-cos {r['paper_averaged_cos']['mean']:.4f}, gauge residual {r['gauge_residual']['mean']:.1e}")
-    return "\n".join(lines)
-
-
-def tab_rate_fits(B: dict) -> str:
-    lines = [_mark(B)]
-    for b, f in B.get("rate_fits", {}).items():
-        pred = f"{f['predicted_slope']:.3f}" if f.get("predicted_slope") is not None else "--"
-        lines.append(f"{R.BACKBONES[b].label} & ${f['slope']:.3f}$ & $[{f['ci95'][0]:.3f}, {f['ci95'][1]:.3f}]$ & ${f['r2']:.2f}$ & {f['n_pairs']} & {pred} \\\\")
-    return "\n".join(lines)
-
-
-def tab_kappa(B: dict) -> str:
-    lines = [_mark(B)]
-    for b, k in B.get("kappa", {}).items():
-        q = k["quantiles"]
-        if not k.get("n"): continue
-        lines.append(f"{R.BACKBONES[b].label} & ${k['mean']:.2f}$ & ${k['frac_gt']*100:.1f}\\%$ & ${k['frac_lt1']*100:.1f}\\%$ & " +
-                     " & ".join(f"${q[str(x)]:.2f}$" for x in (0.05, 0.25, 0.5, 0.75, 0.95)) + " \\\\")
-    return "\n".join(lines)
-
-
-def weights_only_text(B: dict) -> str:
-    w = B.get("weights_only")
-    if not w: return "% weights-only control: not run (needs clip_b16/cifar100)"
-    return (f"% weights-only (CLIP/CIFAR-100): WT {w['WT_wo']['mean']*100:.2f}, FIX {w['FIX_wo']['mean']*100:.2f}, FIX+c_hat {w['FIX_wo_chat']['mean']*100:.2f}, J {w['J']['mean']*100:.2f}; "
-            f"full-decay gain {w['gain_full']['mean']*100:.2f}, weights-only gain {w['gain_wo']['mean']*100:.2f}, retention {('%.3f' % w['retention']) if w['retention'] is not None else '--'}, c_hat increment {w['chat_increment']['mean']*100:.2f} (held-out, Def 7.4 as printed), "
-            f"{w['chat_closed_increment']['mean']*100:.2f} (closed form)")
-
-
-# ---------------------------------------------------------------------------
 # Diff against the printed values
 # ---------------------------------------------------------------------------
 
-def diff_report(A: Optional[dict], B: Optional[dict]) -> str:
+def diff_report(A: Optional[dict]) -> str:
     rows = ["# Printed vs reproduced", "", "| table | cell | printed | reproduced | note |", "|---|---|---|---|---|"]
     if A:
         for (b, d), (m, s) in R.PRINTED["A.tab:gamma-min"].items():
@@ -228,19 +167,10 @@ def diff_report(A: Optional[dict], B: Optional[dict]) -> str:
             fc, fu = e["arms"]["clipped"]["fit"].get("slope"), e["arms"]["unclipped"]["fit"].get("slope")
             rows.append(f"| tab:ecf-rates | {b} | clipped {R.PRINTED['A.ecf_slopes']['clipped']}, unclipped {R.PRINTED['A.ecf_slopes']['unclipped']} | "
                         f"clipped {('%.3f' % fc) if fc is not None else '--'}, unclipped {('%.3f' % fu) if fu is not None else '--'} | |")
-    if B:
-        for (b, d), (wt, fx, j) in R.PRINTED["B.tab:fix-benchmark"].items():
-            r = B["benchmark"].get(f"{b}|{d}")
-            rep = ("%.1f/%.1f/%.1f" % (r["WT"]["mean"] * 100, r["FIX"]["mean"] * 100, r["J"]["mean"] * 100)) if r else "--"
-            rows.append(f"| tab:fix-benchmark | {b}/{d} | {wt}/{fx}/{j} | {rep} | |")
-        for key, r in B.get("bias_direction", {}).items():
-            rows.append(f"| tab:bias-direction | {key} | cos 0.92-0.98 (natural) | per-pair cos {r['pair_cos_mean']['mean']:.3f}, CV {r['cv']['mean']:.3f}; averaged-cos {r['paper_averaged_cos']['mean']:.4f} | averaged statistic is the gauge identity |")
-        for b, f in B.get("rate_fits", {}).items():
-            rows.append(f"| tab:rate-fits | {b} | (see paper) | slope {f['slope']:.3f} R2 {f['r2']:.2f} n {f['n_pairs']} | predicted {f.get('predicted_slope')} |")
     return "\n".join(rows)
 
 
-def render_all(A: Optional[dict] = None, B: Optional[dict] = None) -> Dict[str, str]:
+def render_all(A: Optional[dict] = None) -> Dict[str, str]:
     """Every emitted file as text, keyed by file name (the single source for write_all and check_all)."""
     out: Dict[str, str] = {}
     if A:
@@ -248,26 +178,22 @@ def render_all(A: Optional[dict] = None, B: Optional[dict] = None) -> Dict[str, 
                          ("A_tab_slope_fits", tab_slope_fits), ("A_tab_ecf_rates", tab_ecf_rates), ("A_tab_alpha_fits", tab_alpha_fits),
                          ("A_tab_method_comparison", tab_method_comparison), ("A_predictor", predictor_text)):
             out[f"{name}.tex"] = fn(A)
-    if B:
-        for name, fn in (("B_tab_fix_benchmark", tab_fix_benchmark), ("B_tab_lda_ncm", tab_lda_ncm), ("B_tab_bias_direction", tab_bias_direction),
-                         ("B_tab_rate_fits", tab_rate_fits), ("B_tab_kappa", tab_kappa), ("B_weights_only", weights_only_text)):
-            out[f"{name}.tex"] = fn(B)
-    out["DIFF.md"] = diff_report(A, B)
+    out["DIFF.md"] = diff_report(A)
     return out
 
 
-def write_all(out_dir: Path, A: Optional[dict] = None, B: Optional[dict] = None) -> List[Path]:
+def write_all(out_dir: Path, A: Optional[dict] = None) -> List[Path]:
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True); written = []
-    for name, text in render_all(A, B).items():
+    for name, text in render_all(A).items():
         p = out_dir / name; p.write_text(text, encoding="utf-8"); written.append(p)
     return written
 
 
-def check_all(out_dir: Path, A: Optional[dict] = None, B: Optional[dict] = None) -> Dict[str, str]:
+def check_all(out_dir: Path, A: Optional[dict] = None) -> Dict[str, str]:
     """Freeze check: regenerate every table in memory and compare with the files on disk, byte for byte.
     Returns {file: "same" | "differs" | "missing"}; a frozen repository has every value "same"."""
     out_dir = Path(out_dir); status = {}
-    for name, text in render_all(A, B).items():
+    for name, text in render_all(A).items():
         p = out_dir / name
         status[name] = "missing" if not p.exists() else ("same" if p.read_text() == text else "differs")
     return status

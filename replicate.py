@@ -2,9 +2,8 @@
 """replicate.py -- one entry point for the whole replication.
 
   python replicate.py features  --backbones vit_in21k,dinov2_b14,clip_b16,random_vit --datasets cifar100,imagenet_r,cub200,omnibenchmark
-  python replicate.py features  --paper B                 # the Paper B set (adds mae_b16, resnet50; imagenet100 needs --imagenet100-root)
-  python replicate.py analyze   --paper A|B|AB [--optimizer adamw|lbfgs] [--seeds 0,1,2,3,4]
-  python replicate.py tables                               # LaTeX rows + DIFF.md from results/paper{A,B}_results.json
+  python replicate.py analyze   --paper A [--optimizer adamw|lbfgs] [--seeds 0,1,2,3,4]
+  python replicate.py tables                               # LaTeX rows + DIFF.md from results/paperA_results.json
   python replicate.py condition-s                          # Condition (S) clauses (nu, delta_ij, a_ij) from the feature caches alone
   python replicate.py fingerprint                          # which convention reproduces the printed gamma_min / nu / RHS (caches only)
   python replicate.py features-timm --data-root /content/data --out-root features_timm   # the recovered timm protocol, separate cache root
@@ -12,7 +11,6 @@
   python replicate.py audit-tex --paper A --tex <neurips_2026.tex>   # printed-versus-regenerated ledger, cell by cell
   python replicate.py drift     --data-root /content/data  # Paper A drift (GPU; resumable per (lr, seed))
   python replicate.py drift-readback                        # P1..P8 and C1..C5 scored from paperA_drift.json -> DRIFT_READBACK.md
-  python replicate.py nonvision --allow-download           # Paper B 20 Newsgroups full run (Colab)
   python replicate.py synthetic                            # the synthetic verification suites + tolerance scoreboard
   python replicate.py selftest                             # end-to-end on synthetic caches (no GPU, ~minutes)
 
@@ -41,8 +39,8 @@ def _log(msg):
 def cmd_features(a):
     from pipeline.features import extract, determinism_check
     dev = a.device if a.device not in (None, "auto", "numpy") else "cuda"
-    bbs = a.backbones.split(",") if a.backbones else (list(R.PAPER_A_BACKBONES) + ["random_vit"] if a.paper == "A" else list(R.PAPER_B_BACKBONES))
-    dss = a.datasets.split(",") if a.datasets else (list(R.PAPER_A_DATASETS) if a.paper == "A" else list(R.PAPER_B_DATASETS))
+    bbs = a.backbones.split(",") if a.backbones else list(R.PAPER_A_BACKBONES) + ["random_vit"]
+    dss = a.datasets.split(",") if a.datasets else list(R.PAPER_A_DATASETS)
     root = Path(a.features)
     for b in bbs:
         _log(json.dumps(determinism_check(b, dev)))
@@ -59,18 +57,9 @@ def cmd_features(a):
 
 def cmd_analyze(a):
     from pipeline import paper_a
-    try:
-        from pipeline import paper_b
-    except ImportError:  # A-only release: the B driver is not part of this repository
-        paper_b = None
     root = Path(a.features); out = Path(a.results); seeds = tuple(int(s) for s in a.seeds.split(","))
-    if "A" in a.paper:
-        paper_a.run_all(root, out, seeds=seeds, optimizer=a.optimizer, K_method=a.K, skip_ecf=a.skip_ecf, ranpac_M=a.ranpac_M,
-                        device=a.device, schedule=a.schedule, log=_log)
-    if "B" in a.paper:
-        if paper_b is None:
-            raise SystemExit("paper B driver not included in this repository (A-only release)")
-        paper_b.run_all(root, out, seeds=seeds, optimizer=a.optimizer, device=a.device, log=_log)
+    paper_a.run_all(root, out, seeds=seeds, optimizer=a.optimizer, K_method=a.K, skip_ecf=a.skip_ecf, ranpac_M=a.ranpac_M,
+                    device=a.device, schedule=a.schedule, log=_log)
     cmd_tables(a)
 
 
@@ -120,7 +109,6 @@ def cmd_tables(a):
     from pipeline import tables
     out = Path(a.results)
     A = json.loads((out / "paperA_results.json").read_text()) if (out / "paperA_results.json").exists() else None
-    B = json.loads((out / "paperB_results.json").read_text()) if (out / "paperB_results.json").exists() else None
     if getattr(a, "check", False):
         # Freeze idempotence test. The canonical generator is tables/build_all.py (the G08 layer: per-paper fragments with
         # caption tags and provenance meta, DIFF.md with a banner) when it exists; it is rerun into a temporary folder and
@@ -158,7 +146,7 @@ def cmd_tables(a):
                 _log(f"[tables --check] FAIL: {len(bad)} difference(s) between tables/out and a regeneration by tables/build_all.py"); raise SystemExit(1)
             _log("[tables --check] PASS: tables/build_all.py regenerates tables/out (tex, caption tags, DIFF.md byte for byte; meta up to the timestamp)")
             return
-        status = tables.check_all(ROOT / "tables" / "out", A, B)
+        status = tables.check_all(ROOT / "tables" / "out", A)
         for name, st in status.items():
             _log(f"[tables --check] {name}: {st}")
         bad = [n for n, st in status.items() if st != "same"]
@@ -167,7 +155,7 @@ def cmd_tables(a):
             raise SystemExit(1)
         _log("[tables --check] PASS: every emitted table and DIFF.md regenerates byte for byte")
         return
-    for p in tables.write_all(ROOT / "tables" / "out", A, B):
+    for p in tables.write_all(ROOT / "tables" / "out", A):
         _log(f"[tables] {p}")
 
 
@@ -207,46 +195,27 @@ def cmd_drift(a):
               device=(a.device or "cuda"), log=_log)
 
 
-def cmd_nonvision(a):
-    args = [sys.executable, str(ROOT / "experiments" / "nonvision.py"), "--mode", "full", "--allow-local-full", "--update-index",
-            "--out-root", a.results]
-    if a.allow_download: args.append("--allow-download")
-    if a.grouping: args += ["--grouping", a.grouping]
-    subprocess.run(args, check=True)
-
-
 def cmd_synthetic(a):
     from experiments import scoreboard
     scoreboard.main((["--run"] if a.run else []) + (["--quick"] if a.quick else []))
 
 
 def cmd_selftest(a):
-    """End-to-end run of both drivers and the table emitters on small synthetic feature caches (overlapping
+    """End-to-end run of the driver and the table emitters on small synthetic feature caches (overlapping
     Gaussian classes so that accuracies are not saturated).  Exercises every code path the real run uses, with
     the optimizer and backend of the real run (AdamW, auto device), at a fraction of the sizes."""
     from pipeline import backend, features as F, paper_a, tables
-    try:
-        from pipeline import paper_b
-    except ImportError:  # A-only release: the B leg of the selftest is skipped
-        paper_b = None
     root = ROOT / "results" / "_selftest_features"; out = ROOT / "results" / "_selftest"
     for b in ("vit_in21k", "dinov2_b14", "clip_b16", "random_vit"):
         for d in ("cifar100", "imagenet_r"):
             F.write_synthetic_cache(b, d, root, d=32, n_train_per_class=30, n_test_per_class=10, sep=(0.9 if b != "random_vit" else 0.3))
-    for b in ("mae_b16", "resnet50"):
-        F.write_synthetic_cache(b, "cifar100", root, d=32, n_train_per_class=30, n_test_per_class=10, sep=0.9)
     t0 = time.time(); _log(f"[selftest] backend {backend.describe(a.device)}")
-    proto_a = dict(R.HEAD_PROTOCOL["A"], epochs=60); proto_b = dict(R.HEAD_PROTOCOL["B"], epochs=60)
+    proto_a = dict(R.HEAD_PROTOCOL["A"], epochs=60)
     A = paper_a.run_all(root, out, seeds=(0, 1), optimizer=a.optimizer, K_method=100, skip_ecf=a.skip_ecf, K_sweep=(50, 100, 200, 400),
                         datasets=("cifar100", "imagenet_r"), ranpac_M=500, device=a.device, protocol=proto_a, log=_log)
-    if paper_b is not None:
-        B = paper_b.run_all(root, out, seeds=(0, 1), optimizer=a.optimizer, rows=(("dinov2_b14", "cifar100"), ("clip_b16", "cifar100"), ("mae_b16", "cifar100"), ("resnet50", "cifar100")),
-                            all_datasets=("cifar100", "imagenet_r"), device=a.device, protocol=proto_b, log=_log)
-    else:
-        B = None; _log("[selftest] paper B driver not included (A-only release); B leg skipped")
-    for p in tables.write_all(out / "tables", A, B):
+    for p in tables.write_all(out / "tables", A):
         _log(f"[selftest] {p}")
-    assert A["slopes"] and A["predictor"] and (B is None or B["rate_fits"]), "selftest produced no fits"
+    assert A["slopes"] and A["predictor"], "selftest produced no fits"
     _log(f"[selftest] OK in {time.time()-t0:.0f}s (synthetic provenance; nothing here is a paper number)")
 
 
@@ -256,10 +225,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--results", default=str(ROOT / "results"))
     p.add_argument("--device", default=None, help="numpy | cpu | cuda | auto (default: $REPLICATION_DEVICE or auto)")
     sub = p.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("features"); s.add_argument("--paper", default="A"); s.add_argument("--backbones", default=None); s.add_argument("--datasets", default=None)
+    s = sub.add_parser("features"); s.add_argument("--paper", default="A", choices=["A"]); s.add_argument("--backbones", default=None); s.add_argument("--datasets", default=None)
     s.add_argument("--data-root", default="/content/data"); s.add_argument("--imagenet100-root", default=None); s.add_argument("--batch", type=int, default=128)
     s.set_defaults(fn=cmd_features)   # the torch device for extraction is the top-level --device (default cuda here)
-    s = sub.add_parser("analyze"); s.add_argument("--paper", default="AB"); s.add_argument("--optimizer", default="adamw", choices=["adamw", "lbfgs"])
+    s = sub.add_parser("analyze"); s.add_argument("--paper", default="A", choices=["A"]); s.add_argument("--optimizer", default="adamw", choices=["adamw", "lbfgs"])
     s.add_argument("--seeds", default="0,1,2,3,4"); s.add_argument("--K", type=int, default=2000); s.add_argument("--skip-ecf", action="store_true")
     s.add_argument("--ranpac-M", type=int, default=10000, help="RanPAC random-projection width (10000 as in RanPAC; lower it on CPU)")
     s.add_argument("--schedule", default="printed", choices=["printed", "consistent"], help="Algorithm 1 stage-0 schedule for the clipped-SGD arms (Paper A)")
@@ -271,7 +240,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--out", default=None, help="output folder (default <results>/figures)"); s.add_argument("--drift", default=None, help="drift JSON (default <results>/paperA_drift.json)")
     s.set_defaults(fn=cmd_figures)
     s = sub.add_parser("audit-tex", help="claim ledger: every number printed in the paper's tables against the regenerated results (reads the TeX, never edits it)")
-    s.add_argument("--paper", required=True, choices=["A", "B"]); s.add_argument("--tex", required=True, help="path to the paper's neurips_2026.tex")
+    s.add_argument("--paper", required=True, choices=["A"]); s.add_argument("--tex", required=True, help="path to the paper's neurips_2026.tex")
     s.add_argument("--out", default=None, help="output folder (default <results>)"); s.set_defaults(fn=cmd_audit_tex)
     s = sub.add_parser("features-timm", help="re-extract Paper A features under the recovered timm protocol into a separate cache root")
     s.add_argument("--data-root", default="/content/data"); s.add_argument("--out-root", default="features_timm")
@@ -292,7 +261,6 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("drift-readback", help="score the pre-registered drift predictions P1..P8 and checks C1..C5 from paperA_drift.json")
     s.add_argument("--drift", default=None, help="drift JSON (default <results>/paperA_drift.json)")
     s.add_argument("--results-json", default=None, help="paperA_results.json for check C3 (optional)"); s.set_defaults(fn=cmd_drift_readback)
-    s = sub.add_parser("nonvision"); s.add_argument("--allow-download", action="store_true"); s.add_argument("--grouping", default=None); s.set_defaults(fn=cmd_nonvision)
     s = sub.add_parser("synthetic"); s.add_argument("--run", action="store_true", help="re-run every synthetic suite before scoring")
     s.add_argument("--quick", action="store_true", help="reduced grids"); s.set_defaults(fn=cmd_synthetic)
     s = sub.add_parser("selftest"); s.add_argument("--skip-ecf", action="store_true"); s.add_argument("--optimizer", default="adamw", choices=["adamw", "lbfgs"]); s.set_defaults(fn=cmd_selftest)

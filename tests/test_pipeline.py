@@ -20,7 +20,7 @@ os.environ.setdefault("REPLICATION_DEVICE", "numpy")
 
 
 def gaussian_tasks(seed=0, N=20, d=12, n=400, sep=1.2, T=4):
-    """Shared-covariance Gaussian class-conditionals (Assumption 2.1 of Paper B), N classes in T tasks."""
+    """Shared-covariance Gaussian class-conditionals (companion Assumption 2.1), N classes in T tasks."""
     g = np.random.default_rng(seed)
     A = g.standard_normal((d, d)); sigma = A @ A.T / d + 0.5 * np.eye(d); L = np.linalg.cholesky(sigma)
     mu = sep * g.standard_normal((N, d))
@@ -60,7 +60,7 @@ def test_protocol_a_standardizes_and_transform_roundtrip():
 
 
 # ---------------------------------------------------------------------------
-# Paper B identities on the population head
+# Population-head identities (companion Thm 3.3)
 # ---------------------------------------------------------------------------
 
 def population_head(st: S.ClassStats):

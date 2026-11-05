@@ -1,0 +1,11 @@
+# Python bytecode and caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Build transcript (regenerated per build; the freeze check skips it)
+tables/out/BUILD_REPORT.txt

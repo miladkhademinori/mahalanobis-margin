@@ -2,7 +2,7 @@
 
 Implemented by agent H08 (implementation wave), 2026-10-21, replacing the
 G09 skeleton placeholder. Spec sources (binding):
-  - exec/G03_log.md SPEC 8 (paper-B datasets: Split-CIFAR-100 10x10
+  - exec/G03_log.md SPEC 8 (benchmark datasets: Split-CIFAR-100 10x10
     50k/10k 32->224, ImageNet variants, DomainNet domains-as-tasks) and
     SPEC 9 (20 Newsgroups BY-DATE, headers/footers/quotes removed,
     T=5 x C=4).

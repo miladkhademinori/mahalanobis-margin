@@ -55,7 +55,7 @@ CONVENTION NOTE (load-bearing, per G02 S1)
 Paper A's *definition* (Def 3.1) uses the PAIR-AVERAGED covariance
 ``(Sigma^(i)+Sigma^(j))/2`` -- this differs BOTH from Paper A's own
 *operational estimator* (a SINGLE Ledoit-Wolf pooled Sigma_hat shared by
-all pairs, L4285 and L4305) AND from Paper B's shared-Sigma convention
+all pairs, L4285 and L4305) AND from the companion model's shared-Sigma convention
 (``core.gaussian_model``, ``ass:gauss``: one Sigma for every class). The
 two conventions coincide exactly when all class-conditional covariances
 are identical (then Sigma^(t) = Sigma for every task and the pair average
@@ -229,7 +229,7 @@ def task_statistics(
     ----------
     class_means : (N, d) per-class means mu_r (global class order).
     class_covs  : (N, d, d) per-class covariances Sigma_r; or a single
-        (d, d) covariance SHARED by every class (Paper B ``ass:gauss``
+        (d, d) covariance SHARED by every class (companion ``ass:gauss``
         style -- then Sigma^(t) is that covariance for every task); or
         None (identity metric: Euclidean margins).
     task_of_class : (N,) int task index of each class (values 0..T-1,
@@ -290,8 +290,8 @@ def gamma_ij_pairwise(
     PAIR-AVERAGED covariance convention -- this is Paper A's *definition*
     and deliberately DIFFERS from (a) the operational estimator of
     :func:`estimate_gamma_min` (single shared Ledoit-Wolf pooled Sigma_hat,
-    app:gamma-computation L4285/L4305) and (b) Paper B's shared-Sigma
-    ``ass:gauss`` model in ``core.gaussian_model``. All three coincide only
+    app:gamma-computation L4285/L4305) and (b) the companion model's
+    shared-Sigma ``ass:gauss`` in ``core.gaussian_model``. All three coincide only
     when every class shares one covariance.
 
     Computes via one Cholesky factorisation + one triangular solve of the

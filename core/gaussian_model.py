@@ -1,8 +1,8 @@
 """core.gaussian_model -- Gaussian class-conditional CIL model with exact heads.
 
-Paper B synthetic model per SPEC 1 of
+Synthetic Gaussian CIL model per SPEC 1 of
 ``N1000_INIT_2026-10-21/exec/G03_log.md``. All TeX anchors below refer to
-``working/paper_B/neurips_2026.tex`` (G03's cited source) as ``anchor@line``.
+the companion paper's TeX source (G03's cited source) as ``anchor@line``.
 
 Model (Sec 2, L182): CIL over T tasks with disjoint label sets Y^(t) of size
 C_t (ragged allowed, cf. Theorem 5.2's C_1=2, C_2=3 construction), N = sum_t

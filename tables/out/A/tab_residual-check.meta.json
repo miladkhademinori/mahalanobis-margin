@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-22T12:30:30Z",
+ "created_utc": "2026-11-05T13:47:35Z",
  "emitter": "pipeline.tables.tab_residual_check",
  "g08_class": "POST-HOC",
  "gates": [],
@@ -10,5 +10,5 @@
   "synthetic"
  ],
  "supporting_runs": [],
- "tex_sha256": "57936ca3dd43ce98ea036695a242c14fb5c32e92891c93074df7f9d39bbd1653"
+ "tex_sha256": "1f91d2197515444df951022cd2d2c2168018301fcdcb77789d2a1029f9625c51"
 }

@@ -1,4 +1,4 @@
-"""core.lda_ncm -- LDA / NCM heads and ordering-aware evaluation on cached features (Paper B).
+"""core.lda_ncm -- LDA / NCM heads and ordering-aware evaluation on cached features.
 
 IMPLEMENTED by H03, 2026-10-21 (replaces the G09 skeleton placeholder).
 Spec sources:
@@ -13,8 +13,8 @@ Semantics (G03 SPEC 5, all closed-form, evaluation-only, no training):
   - LDA (SLDA-style): score_r(x) = mu_r' Sigma^-1 x - (1/2) mu_r' Sigma^-1 mu_r
     with mu_r the class means from TRAINING data only (uniform priors: no
     prior term) and Sigma the Ledoit-Wolf shrunk pooled within-class
-    covariance. Population equivalence: the de-centered head of Paper B
-    equals this shared-covariance LDA discriminant exactly.
+    covariance. Population equivalence: the de-centered head (companion
+    Def 7.1) equals this shared-covariance LDA discriminant exactly.
   - NCM: same discriminant with Sigma = I (nearest class mean over
     Euclidean cached features).
   - Sigma_hat rule (source L2050-2062): computed once per task on that
@@ -39,9 +39,8 @@ recorded as null and reported as MISSING at aggregation time. Never
 imputed, never estimated, never silently dropped.
 
 Bridge exports `task_lw_covariance` / `pooled_covariance` /
-`lda_final_accuracy` / `ncm_final_accuracy` give experiments/
-lda_ncm_eval.py one shared source for the same numbers (it prefers this
-module and labels its fallback path when these are absent).
+`lda_final_accuracy` / `ncm_final_accuracy` give callers one shared
+source for the same numbers.
 
 Laws honoured: writes only this module + its exec log (H03); no OneDrive
 paths; dependencies numpy/scipy (+ sklearn for the self-check cross-check
@@ -480,7 +479,7 @@ def format_pm(mean_pct: float | None, sd_pct: float | None) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Bridge exports for experiments/lda_ncm_eval.py (same numbers, one source)
+# Bridge exports (same numbers, one source)
 # ---------------------------------------------------------------------------
 
 
@@ -491,7 +490,7 @@ def task_lw_covariance(
 ) -> np.ndarray:
     """Ledoit-Wolf shrunk WITHIN-class covariance of ONE task's train block.
 
-    Bridge export (experiments/lda_ncm_eval.py prefers core when present).
+    Bridge export (callers prefer core when present).
     Numerically identical to sklearn
     `LedoitWolf(assume_centered=True).fit(task_centered_rows).covariance_`
     (analytical 2004 closed form; asserted against sklearn in self_check).
@@ -542,7 +541,7 @@ def lda_final_accuracy(
 ) -> float:
     """LDA final average accuracy A-bar in PERCENT on the cumulative test set.
 
-    Bridge export matching the experiments/lda_ncm_eval.py contract: means
+    Bridge export: means
     pool every training row of each class; Sigma = sample-weighted pooled
     per-task LW covariance (equal-weight on balanced tasks). `classes` is
     accepted for signature parity and ignored (data is the authority).
@@ -1112,7 +1111,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     """
     parser = argparse.ArgumentParser(
         prog="core.lda_ncm",
-        description="LDA/NCM comparison on cached features (Paper B, tab:lda-ncm-comparison)",
+        description="LDA/NCM comparison on cached features (tab:lda-ncm-comparison)",
     )
     parser.add_argument("--features-dir", type=Path,
                         default=_repo_default("data/B/features"),

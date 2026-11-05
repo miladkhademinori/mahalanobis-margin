@@ -56,7 +56,6 @@ BACKBONES: Dict[str, Backbone] = {
 }
 
 PAPER_A_BACKBONES = ("vit_in21k", "dinov2_b14", "clip_b16")
-PAPER_B_BACKBONES = ("dinov2_b14", "clip_b16", "mae_b16", "resnet50", "vit_in21k")
 
 
 # ---------------------------------------------------------------------------
@@ -95,16 +94,6 @@ DATASETS: Dict[str, Dataset] = {
 }
 
 PAPER_A_DATASETS = ("cifar100", "imagenet_r", "cub200", "omnibenchmark")
-PAPER_B_DATASETS = ("cifar100", "imagenet100", "imagenet_r", "domainnet")   # imagenet1k descoped
-
-# Paper B's tab:fix-benchmark rows (backbone, dataset), in print order.
-PAPER_B_BENCHMARK_ROWS: Tuple[Tuple[str, str], ...] = (
-    ("dinov2_b14", "cifar100"), ("dinov2_b14", "imagenet100"), ("dinov2_b14", "imagenet1k"),
-    ("clip_b16", "cifar100"), ("clip_b16", "imagenet100"),
-    ("mae_b16", "imagenet100"), ("resnet50", "imagenet100"),
-    ("vit_in21k", "imagenet1k"),
-    ("dinov2_b14", "domainnet"), ("clip_b16", "domainnet"),
-)
 
 
 def paper_a_configs() -> List[Tuple[str, str]]:
@@ -195,8 +184,6 @@ def override_task_split(overrides: Optional[str] = None) -> List[dict]:
 # ---------------------------------------------------------------------------
 
 HEAD_PROTOCOL = {
-    # Paper B app:experiments: AdamW lr 1e-3, batch 128, wd 1e-4 on W and b, cosine to 1e-6, 50 epochs/task
-    "B": dict(optimizer="adamw", lr=1e-3, batch=128, lam=1e-4, epochs=50, eta_min=1e-6, decay_bias=True),
     # Paper A app:tc-gap: AdamW wd 1e-4, 20 epochs, lr 1e-3
     "A": dict(optimizer="adamw", lr=1e-3, batch=128, lam=1e-4, epochs=20, eta_min=1e-6, decay_bias=True),
 }
@@ -231,12 +218,4 @@ PRINTED: Dict[str, object] = {
     "A.ecf_slopes": dict(clipped=-0.31, unclipped=-0.10),
     "A.drift": dict(slopes={1e-5: -0.164, 1e-4: -1.73}, t_star={1e-5: 14.2, 1e-4: 2.35, 1e-3: 0.21},
                     time_to_floor=0.48, gamma0=8.20, secants=(-8.20, -4.10), corr=0.998, crossover=3.18),
-    "B.tab:fix-benchmark": {("dinov2_b14", "cifar100"): (82.3, 86.5, 86.8), ("dinov2_b14", "imagenet100"): (80.5, 84.7, 85.0),
-                            ("dinov2_b14", "imagenet1k"): (76.8, 81.8, 82.3), ("clip_b16", "cifar100"): (81.5, 85.7, 86.0),
-                            ("clip_b16", "imagenet100"): (79.2, 83.5, 83.8), ("mae_b16", "imagenet100"): (65.3, 77.2, 78.5),
-                            ("resnet50", "imagenet100"): (62.1, 73.8, 75.2), ("vit_in21k", "imagenet1k"): (78.5, 83.2, 83.5),
-                            ("dinov2_b14", "domainnet"): (58.2, 68.5, 70.8), ("clip_b16", "domainnet"): (56.8, 66.8, 68.5)},
-    "B.bias_direction": dict(cos_range_natural=(0.92, 0.98), cv_range_natural=(0.05, 0.16),
-                             cos_range_domainnet=(0.78, 0.86), cv_range_domainnet=(0.22, 0.32)),
-    "B.nonvision": dict(WT=64.20, FIX=71.50, J=73.84, gain=7.30, cos=0.93, cv=0.12),
 }

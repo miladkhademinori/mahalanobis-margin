@@ -37,7 +37,6 @@ CONTEXT_DICTS = (
     ("pipeline.registry", "PRINTED"),
     ("experiments.falsification", "PAPER_CONTEXT_QUOTED"),
     ("experiments.slope_fits", "PAPER_CONTEXT_QUOTED"),
-    ("experiments.nonvision", "PAPER_CONTEXT"),
     ("experiments.predictor_regression", "GAMMA_MIN_PRINTED"),
     ("experiments.predictor_regression", "FINAL_ACC_PRINTED"),
     ("experiments.predictor_regression", "PRINTED_TARGETS"),

@@ -55,7 +55,7 @@ Everything in this repository exists to verify those three statements computatio
 | `core/` | The mathematical core: Mahalanobis margin and class-statistics estimators (Ledoit-Wolf shrinkage, per-class metrics), the head family, the closed-form identities every theorem reduces to, and the gating logic that scores each claim PASS/FAIL at calibrated tolerances. |
 | `benchmarks/` | Dataset and backbone wiring: the four class-IL benchmark splits (Split-CIFAR-100, Split-ImageNet-R, Split-CUB-200, Split-OmniBenchmark) and the three pretrained ViT-B/16 backbones (IN21K, DINOv2, CLIP), plus frozen-feature extraction. |
 | `pipeline/` | The real-feature replication pipeline end to end: feature loading, head training (the CF-optimal diagonal-block heads and the joint heads the TC gap is measured between), table builders, figure builders, and the TeX audit that checks every printed table cell in the paper against the value regenerated from the store. |
-| `experiments/` | The experiment drivers: `synthetic_margin` (the closed-form margin verification suites), `synthetic_rate` (the convergence-rate suites), `slope_fits` (the log(TC gap) versus γ_min regressions with bootstrap CIs), `predictor_regression` (the margin against simpler proxies), `drift` (the backbone-fine-tuning study), `diagnostic_controls`, `lda_ncm_eval`, `falsification` (the falsification battery), and `scoreboard` (the claim-by-claim scorer). |
+| `experiments/` | The experiment drivers: `synthetic_margin` (the closed-form margin verification suites), `synthetic_rate` (the convergence-rate suites), `slope_fits` (the log(TC gap) versus γ_min regressions with bootstrap CIs), `predictor_regression` (the margin against simpler proxies), `drift` (the backbone-fine-tuning study), `falsification` (the falsification battery), and `scoreboard` (the claim-by-claim scorer). |
 | `tests/` | The pytest suites: `test_theory_A.py` checks every theorem identity at machine precision; `test_core`, `test_pipeline`, `test_tables`, `test_features_builders`, `test_runtime`, `test_smoke` and `zbattery.py` cover the modules; `conftest.py` wires the import paths. |
 | `configs/` | The 12-configuration experiment grid (`paper_A_12configs.json` / `.yaml`: 3 backbones x 4 datasets), the anchor configurations, and the seed list. |
 | `results/` | The results store. Every run is a JSON payload under `results/runs/<family>/` carrying its configuration, its outputs, and its provenance; `results/INDEX.json` maps run to artifact; `results/CORRECTIONS.md` is the running corrections ledger. Nothing in any table is hand-typed: every number regenerates from a payload in this directory. |
@@ -152,7 +152,7 @@ The store under `results/` is organised by run family (`runs/A/`, `runs/drift/`,
 | Theorem 5.5 (the E_CF + E_TC decomposition) | `experiments/synthetic_rate.py` (the E_CF leg at the measured tail index) and the slope fits (the E_TC leg); the disjoint-dependencies prediction is the comparison the table builders emit |
 | Proposition 5.3 (clipped-SGD convergence, heavy tails) | The rate suites: clipped vs unclipped schedules at the measured alpha, exactly Figure 2 |
 | The drift bound and the critical horizon t\* | `experiments/drift.py` + `python replicate.py drift-readback` |
-| The diagnostic recipe | `experiments/diagnostic_controls.py` and the published-baselines comparison in the table builders |
+| The diagnostic recipe | The published-baselines comparison in the table builders |
 
 ---
 

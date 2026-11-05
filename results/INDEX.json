@@ -1,60 +1,6 @@
 {
  "runs": [
   {
-   "run_id": "B_synthetic_bias_E3",
-   "path": "runs\\B\\synthetic_bias\\B_synthetic_bias_E3.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_bias",
-   "suite_status": "PASS",
-   "created_utc": "2026-10-22T02:59:54Z"
-  },
-  {
-   "run_id": "B_synthetic_bias_E4",
-   "path": "runs\\B\\synthetic_bias\\B_synthetic_bias_E4.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_bias",
-   "suite_status": "FAIL",
-   "created_utc": "2026-10-22T03:02:42Z"
-  },
-  {
-   "run_id": "B_synthetic_bias_E1",
-   "path": "runs\\B\\synthetic_bias\\B_synthetic_bias_E1.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_bias",
-   "suite_status": "FAIL",
-   "created_utc": "2026-10-22T03:21:24Z"
-  },
-  {
-   "run_id": "B_synthetic_bias_E2",
-   "path": "runs\\B\\synthetic_bias\\B_synthetic_bias_E2.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_bias",
-   "suite_status": "FAIL",
-   "created_utc": "2026-10-22T04:12:30Z"
-  },
-  {
-   "run_id": "B_synthetic_rate_E6",
-   "path": "runs\\B\\synthetic_rate\\B_synthetic_rate_E6.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_rate",
-   "suite_status": "PASS",
-   "created_utc": "2026-10-22T04:55:38Z"
-  },
-  {
-   "run_id": "B_synthetic_rate_E5",
-   "path": "runs\\B\\synthetic_rate\\B_synthetic_rate_E5.json",
-   "provenance": "synthetic",
-   "paper": "B",
-   "experiment": "synthetic_rate",
-   "suite_status": "FAIL",
-   "created_utc": "2026-10-22T04:57:03Z"
-  },
-  {
    "run_id": "A_synthetic_margin_EX1",
    "path": "runs\\A\\synthetic_margin\\A_synthetic_margin_EX1.json",
    "provenance": "synthetic",
@@ -146,16 +92,6 @@
    "experiment": "predictor_regression",
    "suite_status": "INPUTS_MISSING",
    "created_utc": "2026-10-22T06:05:00Z"
-  },
-  {
-   "run_id": "CI3_diagnostic_controls",
-   "path": "runs\\B\\nonvision\\CI3_diagnostic_controls.json",
-   "provenance": "ci3-controls-local-cached (Claude Q7; H07 machinery, H04 algebra, smoke scale)",
-   "paper": "B",
-   "experiment": "diagnostic_controls",
-   "suite_status": "PASS",
-   "created_utc": "2026-10-22T07:13:22Z",
-   "note": "W3-R1 union row (2026-10-22): Claude Q7 controls battery; verdict identity=True -- the H07 smoke cos=1.0000 is an algebraic gauge identity (per-task-centered random head also gives cos 1), see the record's verdict block."
   }
  ]
 }

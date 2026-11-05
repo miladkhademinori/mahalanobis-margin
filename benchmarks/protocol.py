@@ -2,7 +2,7 @@
 
 Implemented by agent H08 (implementation wave), 2026-10-21, replacing the
 G09 skeleton placeholder. Spec sources (binding):
-  - exec/G03_log.md SPEC 8 (paper B benchmark protocol: datasets, orderings
+  - exec/G03_log.md SPEC 8 (benchmark protocol: datasets, orderings
     seeds 0-4, head-training recipe), SPEC 9 (20 Newsgroups nonvision).
   - exec/G02_log.md S2/S3 (paper A: 12 pretrained configs = 3 backbones x
     {Split-CIFAR-100, Split-ImageNet-R, Split-CUB-200, Split-OmniBenchmark};
@@ -36,8 +36,7 @@ ruling: implement BOTH modes, default per paper):
                       CANONICAL_ORDERINGS below; nothing else changes.
   Per-paper defaults (DEFAULT_ORDERING_MODE): paper A body text says
   "task partitions following the canonical PILOT/RanPAC class orderings"
-  (tab:gamma-min), paper B appendix says random class orderings seeds 0-4,
-  so A defaults to canonical and B to random. Both modes are always
+  (tab:gamma-min), so A defaults to canonical. Both modes are always
   constructible for every dataset.
 """
 
@@ -72,9 +71,7 @@ __all__ = [
     "mean_sd",
     "HEAD_TRAINING",
     "PAPER_A_BACKBONES",
-    "PAPER_B_BACKBONES",
     "PAPER_A_DATASETS",
-    "PAPER_B_DATASETS",
     "paper_a_configs",
     "derive_seed",
     "ordering_fingerprint",
@@ -122,7 +119,7 @@ class SplitSpec:
 
     Shared-label domain-incremental (shared_labels=True, task_axis=
     "domain"; DomainNet): every task carries the FULL class set and tasks
-    are domains -- paper B's stress configuration that violates the
+    are domains -- a stress configuration that violates the
     disjoint-label assumption (G03 SPEC 8(d)).
     """
 
@@ -188,8 +185,8 @@ def _registry() -> Dict[str, SplitSpec]:
             name="split-imagenet-r", n_classes=200, n_tasks=10,
             classes_per_task=20, resize=224, papers=("A", "B"),
             note="G03 SPEC 8 open integrity flag + L879: T = 10 x 20; "
-                 "paper-A quartet member (G02 S2) and paper-B "
-                 "rate-validation; ~30k images, no local copy (G04).",
+                 "paper-A quartet member (G02 S2); ~30k images, no local "
+                 "copy (G04).",
         ),
         SplitSpec(
             name="split-cub-200", n_classes=200, n_tasks=10,
@@ -263,12 +260,10 @@ def split_spec(name: str) -> SplitSpec:
 ORDERING_MODES: Tuple[str, ...] = ("canonical", "random")
 
 #: Per-paper ordering-mode defaults (H08 ruling from the two spec logs; the
-#: owner can flip either key -- both modes are always constructible):
+#: owner can flip the key -- both modes are always constructible):
 #:   paper A (4828): tab:gamma-min body text names the canonical
 #:     PILOT/RanPAC class orderings -> default "canonical".
-#:   paper B (12500): app:experiments uses 5 random class orderings,
-#:     seeds 0-4 -> default "random".
-DEFAULT_ORDERING_MODE: Dict[str, str] = {"A": "canonical", "B": "random"}
+DEFAULT_ORDERING_MODE: Dict[str, str] = {"A": "canonical"}
 
 #: Registry for the external PILOT/RanPAC canonical ordering lists once the
 #: owner supplies them (G02 OWNER-ASK 12): dataset name -> verbatim
@@ -392,9 +387,8 @@ def make_ordering(
     dataset: str, mode: Optional[str] = None, *,
     seed: Optional[int] = None, paper: Optional[str] = None,
 ) -> ClassOrdering:
-    """Dispatch on mode. `paper` ("A" | "B") selects the per-paper default
-    when mode is None; the bare default (no mode, no paper) is "random"
-    (paper B appendix convention)."""
+    """Dispatch on mode. `paper` selects the per-paper default
+    when mode is None; the bare default (no mode, no paper) is "random"."""
     if mode is None:
         mode = DEFAULT_ORDERING_MODE.get(paper or "", "random")
     if mode == "random":
@@ -655,15 +649,6 @@ HEAD_TRAINING: Dict[str, object] = {
     "joint_baseline": "eq:ce-full on the union of all tasks, same settings",
 }
 
-#: Paper B backbone HF ids (G03 SPEC 8 L1983-1997; d = feature dim).
-PAPER_B_BACKBONES: Dict[str, Dict[str, object]] = {
-    "dinov2-vitb14": {"hf_id": "facebook/dinov2-base", "d": 768},
-    "vitb16-in21k": {"hf_id": "google/vit-base-patch16-224-in21k", "d": 768},
-    "clip-vitb16": {"hf_id": "openai/clip-vit-base-patch16", "d": 768},
-    "mae-vitb16": {"hf_id": "facebook/vit-mae-base", "d": 768},
-    "resnet-50": {"hf_id": "microsoft/resnet-50", "d": 2048},
-}
-
 #: Paper A backbones (G02 S2/S3): the pretrained trio plus the random-anchor
 #: recipe (random-init ViT-B/16, no pretraining, zero download per G04).
 PAPER_A_BACKBONES: Dict[str, Dict[str, object]] = {
@@ -681,11 +666,6 @@ PAPER_A_BACKBONES: Dict[str, Dict[str, object]] = {
 #: Paper-A dataset quartet (G02 S2).
 PAPER_A_DATASETS: Tuple[str, ...] = (
     "split-cifar100", "split-imagenet-r", "split-cub-200", "split-omnibenchmark",
-)
-#: Paper-B benchmark datasets (G03 SPEC 8; DomainNet = shared-label stress).
-PAPER_B_DATASETS: Tuple[str, ...] = (
-    "split-cifar100", "split-imagenet-100", "split-imagenet-1k",
-    "split-imagenet-r", "domainnet",
 )
 
 

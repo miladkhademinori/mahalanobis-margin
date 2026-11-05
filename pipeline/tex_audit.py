@@ -2,12 +2,11 @@
 number this repository regenerates.
 
   python replicate.py audit-tex --paper A --tex path/to/paper_A/neurips_2026.tex [--results results]
-  python replicate.py audit-tex --paper B --tex path/to/paper_B/neurips_2026.tex
 
 Reads the LaTeX source, parses every ``\\begin{table}`` block that carries a ``\\label{tab:...}``, cleans the
 cells (``$``, ``\\phantom``, ``\\mathbf``, ``\\underline``, ``^\\dagger``, ``\\pm``, intervals), maps row and
 column labels to the registry's backbone and dataset keys, and looks the matching quantity up in
-``results/paperA_results.json`` / ``results/paperB_results.json`` (and ``paperA_drift.json``).  Writes
+``results/paperA_results.json`` (and ``paperA_drift.json``).  Writes
 ``results/TEX_AUDIT_<paper>.md`` and ``.json`` with one row per printed cell: printed value, regenerated
 value, the difference, whether the printed value sits inside the regenerated mean +- 2 sd (or the
 regenerated CI), and a note.  Tables without a mapping are still listed, so the ledger is complete; inline
@@ -331,79 +330,6 @@ def audit_A(tables: Dict[str, dict], A: Optional[dict], D: Optional[dict]) -> Li
 
 
 # ---------------------------------------------------------------------------
-# Paper B audits
-# ---------------------------------------------------------------------------
-
-def audit_B(tables: Dict[str, dict], B: Optional[dict]) -> List[dict]:
-    rows: List[dict] = []
-    B = B or {}
-    t = tables.get("tab:fix-benchmark")
-    if t:
-        for r in t["rows"]:
-            if len(r) < 5:
-                continue
-            b, d = backbone_key(r[0]), dataset_key(r[1]); bench = (B.get("benchmark") or {}).get(f"{b}|{d}") if b and d else None
-            for col, key in ((2, "WT"), (3, "FIX"), (4, "J")):
-                note = ""
-                if key == "FIX" and bench and bench.get("FIX_c"):
-                    note = f"FIX_c {bench['FIX_c']['mean']*100:.2f}; head scale {(bench.get('head_scale') or {}).get('mean')}"
-                rows.append(_row("tab:fix-benchmark", f"{b}/{d} {key}", parse_value(r[col]), _ms(bench.get(key), 100.0) if bench else None, note))
-    t = tables.get("tab:lda-ncm-comparison")
-    if t:
-        for r in t["rows"]:
-            if len(r) < 6:
-                continue
-            b, d = backbone_key(r[0]), dataset_key(r[1]); bench = (B.get("benchmark") or {}).get(f"{b}|{d}") if b and d else None
-            for col, key in ((2, "WT"), (3, "FIX"), (4, "LDA"), (5, "NCM")):
-                rows.append(_row("tab:lda-ncm-comparison", f"{b}/{d} {key}", parse_value(r[col]), _ms(bench.get(key), 100.0) if bench else None,
-                                 note=("owner cell owed (--)" if parse_value(r[col]).get("text") == "--" else "")))
-    t = tables.get("tab:bias-direction")
-    if t:
-        for r in t["rows"]:
-            if len(r) < 5:
-                continue
-            d, b = dataset_key(r[0]), backbone_key(r[1]); bd = (B.get("bias_direction") or {}).get(f"{b}|{d}") if b and d else None
-            for col, key, rkey in ((2, "cos", "pair_cos_mean"), (3, "rel", "pair_rel_mean"), (4, "CV", "cv")):
-                note = ""
-                if bd and key == "cos":
-                    note = f"block-mean (paper's averaged) cos {bd['paper_averaged_cos']['mean']:.4f} is the gauge identity; per-pair reported"
-                rows.append(_row("tab:bias-direction", f"{b}/{d} {key}", parse_value(r[col]), _ms(bd.get(rkey)) if bd else None, note))
-    t = tables.get("tab:rate-fits")
-    if t:
-        for r in t["rows"]:
-            if len(r) < 6:
-                continue
-            b = backbone_key(r[0]); f = (B.get("rate_fits") or {}).get(b) if b else None
-            rows.append(_row("tab:rate-fits", f"{b} kappa", parse_value(r[1]), dict(mean=f["kappa_median"]) if f else None, note="median kappa_min over pairs"))
-            rows.append(_row("tab:rate-fits", f"{b} predicted slope", parse_value(r[2]), dict(mean=f["predicted_slope"]) if f and f.get("predicted_slope") is not None else None))
-            rows.append(_row("tab:rate-fits", f"{b} empirical slope", parse_value(r[3]), dict(mean=f["slope"], ci=f.get("ci95")) if f else None))
-            rows.append(_row("tab:rate-fits", f"{b} R2", parse_value(r[4]), dict(mean=f["r2"]) if f else None))
-            rows.append(_row("tab:rate-fits", f"{b} n", parse_value(r[5]), dict(mean=f["n_pairs"]) if f else None, note=f"pairs with |P|=0 excluded: {f.get('n_pairs_zero')}" if f else ""))
-    t = tables.get("tab:weights-only")
-    if t:
-        wo = B.get("weights_only") or {}
-        amap = {"wtweightsonlydecay": "WT_wo", "fixdefinitionunmodified": "FIX_wo", "fixhatctscalarablation": "FIX_wo_chat", "fixctscalarablation": "FIX_wo_chat", "jjoint": "J"}
-        for r in t["rows"]:
-            key = None
-            for k, v in amap.items():
-                if _norm(r[0]).startswith(k[:12]):
-                    key = v
-            rows.append(_row("tab:weights-only", f"{r[0]} acc", parse_value(r[1]), _ms(wo.get(key), 100.0) if key and wo else None,
-                             note=("closed-form c_hat arm " + _fmt(_ms(wo.get("FIX_wo_chat_closed"), 100.0))) if key == "FIX_wo_chat" and wo else ""))
-    mapped = {"tab:fix-benchmark", "tab:lda-ncm-comparison", "tab:bias-direction", "tab:rate-fits", "tab:weights-only"}
-    for lab, t in tables.items():
-        if lab in mapped:
-            continue
-        note = "published-method row: not reproduced here (D4)" if lab in ("tab:diagnostic", "tab:kappa-distribution") else ("nonvision: experiments/nonvision.py (notebook 05)" if lab == "tab:nonvision" else "no mapping")
-        for r in t["rows"]:
-            for i, c in enumerate(r[1:], 1):
-                pv = parse_value(c)
-                if "text" not in pv:
-                    rows.append(_row(lab, f"{r[0]} / col {i}", pv, None, note=note))
-    return rows
-
-
-# ---------------------------------------------------------------------------
 # Inline claims
 # ---------------------------------------------------------------------------
 
@@ -412,14 +338,6 @@ INLINE_A = [
     ("r = 0.998 (drift)", r"r\s*=\s*\+?(0\.9\d+)", lambda A: None),
     ("ten of twelve satisfy nu <= 1/2", r"(ten) of (?:the )?twelve", lambda A: None),
     ("alpha_xi bound 1/16", r"\\tfrac\{1\}\{16\}", lambda A: None),
-]
-INLINE_B = [
-    ("gap recovery mean 90.5", r"mean \$(9\d\.\d)\\%\$", lambda B: np.mean([v["recovery"]["mean"] for v in (B.get("benchmark") or {}).values() if v.get("recovery", {}).get("mean") is not None]) * 100 if B.get("benchmark") else None),
-    ("gap recovery range 82-94", r"recovers \$(8\d)\$--\$(9\d)\\%\$", lambda B: None),
-    ("cosine at least 0.92", r"cosine at least \$(0\.9\d)\$", lambda B: min([v["pair_cos_mean"]["mean"] for v in (B.get("bias_direction") or {}).values()]) if B.get("bias_direction") else None),
-    ("nonvision gain +7.30", r"\+(7\.\d\d)\$? points", lambda B: None),
-    ("nonvision cosine 0.93", r"cosine \$(0\.9\d)\$, cross-pair CV", lambda B: None),
-    ("slopes within 5 percent", r"within \$(\d)\\%\$", lambda B: max([f.get("slope_error_pct") or 0 for f in (B.get("rate_fits") or {}).values()]) if B.get("rate_fits") else None),
 ]
 
 
@@ -471,9 +389,7 @@ def run(paper: str, tex_path: Path, results_dir: Path, out_dir: Optional[Path] =
         D = json.loads(pd_.read_text(encoding="utf-8")) if pd_.exists() else None
         rows = audit_A(tables, A, D) + audit_inline(tex, INLINE_A, A)
     else:
-        pb = results_dir / "paperB_results.json"
-        B = json.loads(pb.read_text(encoding="utf-8")) if pb.exists() else None
-        rows = audit_B(tables, B) + audit_inline(tex, INLINE_B, B)
+        raise SystemExit("audit-tex: only paper A is included in this repository (A-only release)")
     md = render(rows, paper.upper(), tex_path, results_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     p = out_dir / f"TEX_AUDIT_{paper.upper()}.md"; p.write_text(md, encoding="utf-8")

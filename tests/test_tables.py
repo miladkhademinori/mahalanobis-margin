@@ -62,23 +62,8 @@ G08_A_LIVE = (
     "tab:sens-tasks",           # Table 10, POST-HOC
     "tab:diagnostic",           # Table 11, STATIC
 )
-#: Paper B live table environments (G08 S1; 8 total, +1 folded histograms).
-G08_B_LIVE = (
-    "tab:fix-benchmark",        # Table 1, RUN-FED
-    "tab:diagnostic",           # Table 2, RUN-FED  (B's diagnostic != A's)
-    "tab:lda-ncm-comparison",   # Table 3, POST-HOC (20 gated cells)
-    "tab:kappa-distribution",   # Table 4, RUN-FED
-    "tab:rate-fits",            # Table 5, POST-HOC given heads, else RUN-FED
-    "tab:bias-direction",       # Table 6, POST-HOC given heads, else RUN-FED
-    "tab:weights-only",         # Table 7, RUN-FED
-    "tab:nonvision",            # Table 8, RUN-FED (owner artifact)
-)
-#: The folded ninth B table: owed as histogram artifacts, not a table env.
-G08_B_FOLDED = "tab:kappa-histogram-l2p"
 
-#: G08 COUNTS line: RUN-FED = A 5 + B 5 = 10 exactly. The two B
-#: "POST-HOC given heads, else RUN-FED" entries (rate-fits, bias-direction)
-#: are counted POST-HOC there because heads/features ship with the store.
+#: G08 COUNTS line: RUN-FED = 5 exactly (A-only release).
 G08_A_RUNFED = frozenset({
     "tab:headline-comparison",
     "tab:ecf-rates",
@@ -86,14 +71,7 @@ G08_A_RUNFED = frozenset({
     "tab:drift-slopes",
     "tab:main",
 })
-G08_B_RUNFED = frozenset({
-    "tab:fix-benchmark",
-    "tab:diagnostic",
-    "tab:kappa-distribution",
-    "tab:weights-only",
-    "tab:nonvision",
-})
-G08_RUNFED = G08_A_RUNFED | G08_B_RUNFED
+G08_RUNFED = G08_A_RUNFED
 
 
 def _build_all_is_skeleton() -> bool:
@@ -287,34 +265,21 @@ class TestBlockedReport(unittest.TestCase):
 
     def test_g08_runfed_expectation_selfconsistent(self):
         """INTEGRATION (spec side): the G08 expectation embedded above is
-        internally consistent -- A 11 live labels of which 5 RUN-FED;
-        B 8 live labels (+1 folded, not a table) of which 5 RUN-FED;
-        10 RUN-FED total; RUN-FED disjoint from the live POST-HOC/STATIC
-        remainder. Counted against exec/G08_log.md S1 and its COUNTS line.
+        internally consistent -- 11 live labels of which 5 RUN-FED;
+        RUN-FED disjoint from the live POST-HOC/STATIC remainder. Counted
+        against exec/G08_log.md S1 and its COUNTS line (A-only release).
         """
         self.assertEqual(len(G08_A_LIVE), 11)   # G08 S1: A has 11 tables
-        self.assertEqual(len(G08_B_LIVE), 8)    # G08 S1: B has 8 live
         self.assertEqual(len(G08_A_RUNFED), 5)  # G08 COUNTS: A RUN-FED 5
-        self.assertEqual(len(G08_B_RUNFED), 5)  # G08 COUNTS: B RUN-FED 5
-        self.assertEqual(len(G08_RUNFED), 10)   # G08 COUNTS: 10 RUN-FED
+        self.assertEqual(len(G08_RUNFED), 5)    # G08 COUNTS: 5 RUN-FED
         self.assertTrue(G08_A_RUNFED <= frozenset(G08_A_LIVE))
-        self.assertTrue(G08_B_RUNFED <= frozenset(G08_B_LIVE))
         a_rest = frozenset(G08_A_LIVE) - G08_A_RUNFED   # 5 POST-HOC + 1 STATIC
-        b_rest = frozenset(G08_B_LIVE) - G08_B_RUNFED   # 3 POST-HOC
         self.assertEqual(len(a_rest), 6)
-        self.assertEqual(len(b_rest), 3)
-        # Paper A and Paper B both have a tab:diagnostic; they are distinct
-        # tables (A Table 11 STATIC symptom table; B Table 2 RUN-FED method
-        # diagnostics) -- the per-paper sets keep them separable.
         self.assertIn("tab:diagnostic", G08_A_LIVE)
-        self.assertIn("tab:diagnostic", G08_B_LIVE)
-        # The folded B histogram promise is NOT a live table and must never
-        # appear as either regenerated or blocked TABLE output.
-        self.assertNotIn(G08_B_FOLDED, G08_B_LIVE)
 
     def test_blocked_report_lists_exactly_the_runfed_tables(self):
         """INTEGRATION: build_all's FED-BLOCKED segment lists EXACTLY the
-        10 RUN-FED/owner tables of G08 S1 -- no more (a POST-HOC table
+        5 RUN-FED/owner tables of G08 S1 -- no more (a POST-HOC table
         reported blocked means the store regressed), no fewer (a RUN-FED
         table reported regenerable means a fake fill). Skipped with an
         explicit reason while tables/build_all.py is still the G09
@@ -334,7 +299,7 @@ class TestBlockedReport(unittest.TestCase):
         blocked = _blocked_labels(combined)
         self.assertEqual(
             blocked, G08_RUNFED,
-            f"FED-BLOCKED set mismatch; expected exactly the 10 G08 "
+            f"FED-BLOCKED set mismatch; expected exactly the 5 G08 "
             f"RUN-FED labels, got {sorted(blocked)}",
         )
 

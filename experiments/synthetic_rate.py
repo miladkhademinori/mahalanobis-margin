@@ -1,8 +1,8 @@
-"""experiments.synthetic_rate -- Paper B G06 E5 (n^-1/4 rate) + E6 (kappa regimes).
+"""experiments.synthetic_rate -- G06 E5 (n^-1/4 rate) + E6 (kappa regimes).
 
 Status: IMPLEMENTED by H06, 2026-10-21 (replaces the G09 skeleton).
 
-Spec source (read-only): ``working/paper_B/exec/G06_log.md`` suites E5-E6
+Spec source (read-only): the companion G06 log, suites E5-E6
 (Theorem 8.1 / Remark 8.2 rate and its removal by the fix; Theorem 6.1
 kappa-regime exponential bound), with the rate-fit machinery of
 ``N1000_INIT_2026-10-21/exec/G03_log.md`` SPEC 7 (per-unit OLS of log P on
@@ -867,8 +867,8 @@ def _e5_arm_pass(task, arm_name, grid, seed_list, lam0, n_mc, n_boot,
         "Spec kappa=2 geometry forces within-task Mahalanobis >= 48 "
         "(C=2: 4*max(a^2,b^2) >= 2*(kappa^2-1)*gamma): within-task CE is "
         "saturated (trained-head norm ratio ~0.27-0.38 of the closed form) "
-        "and the mirror-symmetric task pair makes the structural-bias "
-        "constant vanish, so the WT excess sits at/below the seed-noise "
+        "and the mirror-symmetric task pair makes the Thm 8.1 "
+        "bias constant vanish, so the WT excess sits at/below the seed-noise "
         "floor at every n (see curve); the slope is not identifiable. The "
         "n^-1/4 upper bound holds with slack; the rate is not saturated in "
         "this design. See the variant_wellcond arm for the regime where "
@@ -992,7 +992,7 @@ def wellcond_rate_task(gamma: float, a2: float, b2: float, d: int = 8):
     offset norms a=sqrt(a2), b=sqrt(b2) are chosen SMALL so the within-task
     CE is informative (within-task Mahalanobis 4*a2 and 4*b2), which the
     kappa=2 spec split (a^2=b^2=(kappa^2-1)*gamma/2=12, within >= 48)
-    forbids. The tasks are ASYMMETRIC (a != b) so the structural-bias
+    forbids. The tasks are ASYMMETRIC (a != b) so the bias
     constant of Thm 8.1 is non-zero. gamma_ij = gamma exactly; kappa_hat is
     recorded honestly (it drops below 2 -- Thm 8.1's rate statement does
     not use Assumption 6.1; the E6 suite owns the kappa bound).

@@ -1,20 +1,20 @@
-"""pipeline.heads -- linear heads on frozen features, every protocol both papers use.
+"""pipeline.heads -- linear heads on frozen features, every protocol the paper uses.
 
 Objectives
 ----------
-within-task softmax (Paper B eq:ce-within; Paper A "diagonal-only joint training"):
+within-task softmax (eq:ce-within; Paper A "diagonal-only joint training"):
     for each task t, mean CE over the task's classes only + (lam/2)(||W_t||^2 + ||b_t||^2)
     The objective is separable across tasks, so sequential training and
     task-balanced joint diagonal training have the same minimizer; we train it
     per task and assemble the head.
-full softmax (Paper B eq:ce-full; Paper A "all-blocks joint training"):
+full softmax (eq:ce-full; Paper A "all-blocks joint training"):
     mean CE over all N classes + (lam/2)(||W||^2 + ||b||^2)
 
 Optimizers
 ----------
 lbfgs    full-batch L-BFGS-B on the exact objective (deterministic, converged to gtol);
          the reference optimizer for every closed-form comparison.
-adamw    the papers' protocol: AdamW, lr 1e-3, batch 128, cosine schedule to eta_min,
+adamw    the paper's protocol: AdamW, lr 1e-3, batch 128, cosine schedule to eta_min,
          decoupled weight decay lam on W (and on b when decay_bias), E epochs, no
          augmentation.  Implemented in numpy so it runs anywhere.
 clipped  Paper A Algorithm 1: clipped minibatch SGD with eta_t, tau_t from Prop 5.1 and the
@@ -24,7 +24,7 @@ clipped  Paper A Algorithm 1: clipped minibatch SGD with eta_t, tau_t from Prop 
 
 Corrections and reference heads
 -------------------------------
-de_center      Definition 7.1 (Paper B): w_r += Sigma^{-1} mu_bar_t, b_r -= S_bar_t / 2
+de_center      Definition 7.1 (companion paper): w_r += Sigma^{-1} mu_bar_t, b_r -= S_bar_t / 2
 lda_head       shared-covariance LDA / SLDA: w_r = Sigma^{-1} mu_r, b_r = -mu_r^T Sigma^{-1} mu_r / 2
 ncm_head       nearest class mean (Sigma = I), as a linear head
 fecam_head     per-class-covariance Mahalanobis scores (FeCAM-style, shrunk covariances)

@@ -8,7 +8,7 @@ within-class scatter S is Ledoit-Wolf shrunk toward tr(S)/p I, task centroids ar
 class-mean averages, gamma_ij = (mu_i - mu_j)^T Sigma^{-1} (mu_i - mu_j) via
 Cholesky solves, gamma_min = min over task pairs.
 
-Paper B (app:experiments): no standardization; Ledoit-Wolf shrinkage of the
+Per-task convention (companion app:experiments): no standardization; Ledoit-Wolf shrinkage of the
 within-class scatter, computed per task on that task's training data and
 pooled by averaging across tasks.  gamma_ij, D_kl and kappa follow eq:gamma.
 
@@ -108,7 +108,7 @@ class ClassStats:
                 sigmas.append(None); lams.append(np.nan)
         if protocol == "A":   # app:gamma-computation: one pooled estimate over all centred rows
             sigma, lam = _lw_from_moments(S_t.sum(0) / n, float(q_t.sum()), n)
-        else:                 # Paper B app:experiments: per task, averaged over tasks
+        else:                 # per-task convention (companion app:experiments): per task, averaged over tasks
             sigma = np.mean([s_ for s_ in sigmas if s_ is not None], axis=0); lam = float(np.nanmean(lams))
         sigma_task = np.stack([s_ if s_ is not None else sigma for s_ in sigmas])
         chol = np.linalg.cholesky(sigma)
@@ -195,7 +195,7 @@ class ClassStats:
         return np.maximum(D, 0.0)
 
     def kappa_pairs(self) -> List[dict]:
-        """kappa_{ij,kl} = sqrt(D_kl / gamma_ij) for every cross-task class pair (Paper B eq. kappa)."""
+        """kappa_{ij,kl} = sqrt(D_kl / gamma_ij) for every cross-task class pair (companion eq. kappa)."""
         G, D = self.gamma_matrix(), self.D_matrix()
         toc = self.task_of_class
         out = []
@@ -345,7 +345,7 @@ class ClassStats:
                         f"clause_holds{tag}": holds, f"frac_pairs_clause{tag}": ok / tot if tot else float("nan")})
         return out
 
-    # ---- Paper B bias direction (per pair and the paper's averaged statistic) ---
+    # ---- bias direction (per pair and the paper's averaged statistic; companion Thm 4.1) ---
     def bias_direction(self, W: np.ndarray, i: int, j: int) -> dict:
         """Theorem 4.1 diagnostics for trained weights W [N, d] on the ordered block (i, j), in the Sigma^{-1} inner
         product (app:experiments metric iii).  Residual of the class pair (k in i, l in j):

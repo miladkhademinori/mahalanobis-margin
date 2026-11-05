@@ -15,13 +15,6 @@ Paper A
   A_fig_drift           gamma_min trajectory per learning rate (mean and sd over seeds) with the gamma0/2 and
                         0.1 gamma0 lines; a second panel with the fine-tuned and frozen-head accuracies
   A_fig_alpha           Hill tail index per backbone with its bootstrap CI (tab:alpha-fits)
-Paper B
-  B_fig1c_constructions Figure 1(c): closed-form cross-task error P_13(a) of the anti-aligned and the
-                        catastrophic constructions with their Bayes baselines (no data: the curves are
-                        the theorem statements; the sidecar carries the anchor values)
-  B_fig_rate            rate validation: log |P_ij| against gamma_ij per backbone, the OLS line and the
-                        Theorem 6.2 reference slope -(kappa_median - 1)^2 / 8
-  B_fig_gap_recovery    per-row gap recovery (FIX - WT) / (J - WT) with FIX_c beside it
 
 Matplotlib only; Agg backend; no seaborn.  Fonts and sizes are left at defaults so the PDFs are plain.
 """
@@ -272,80 +265,6 @@ def fig_drift(D: dict, out_dir: Path, src: Path) -> List[Path]:
 
 
 # ---------------------------------------------------------------------------
-# Paper B
-# ---------------------------------------------------------------------------
-
-def fig1c_constructions(out_dir: Path) -> List[Path]:
-    """Figure 1(c) of Paper B from the closed forms of the two negative-result theorems.
-
-    Anti-aligned (mu_1 = e1, mu_2 = -e1, mu_3 = a e1 + e2, mu_4 = a e1 - e2, Sigma = I): the per-task CF heads are
-    w_1 = e1, w_2 = -e1, w_3 = e2, w_4 = -e2 with zero biases, so for x ~ N(e1, I) the score (w_1 - w_3)^T x is
-    N(1, 2) and P_13 = Phi(-1/sqrt 2) for every a; Bayes: Phi(-(1/2) sqrt((a-1)^2 + 1)).
-    Catastrophic (mu_1 = e1, mu_2 = -e1, mu_3 = e2, mu_4 = -e2, mu_5 = a e1): task-2 centroid (a/3, 0),
-    S_bar^(2) = (2 + a^2)/3, w_3 = (-a/3, 1), b_3 = -1/2 + (2 + a^2)/6, w_1 = e1, b_1 = 0; the class-1 score has
-    mean (-a^2 + 2a + 7)/6 and variance (1 + a/3)^2 + 1, so P_13 = Phi(-mean/sd) -> 1; the pair (1, 3) Bayes
-    baseline is Phi(-1/sqrt 2) since mu_1 and mu_3 do not move with a."""
-    a = np.linspace(0.0, 12.0, 481)
-    anti = np.full_like(a, _norm.cdf(-1 / np.sqrt(2)))
-    anti_bayes = _norm.cdf(-0.5 * np.sqrt((a - 1) ** 2 + 1))
-    mean = (-a ** 2 + 2 * a + 7) / 6; var = (1 + a / 3) ** 2 + 1
-    cat = _norm.cdf(-mean / np.sqrt(var)); cat_bayes = np.full_like(a, _norm.cdf(-1 / np.sqrt(2)))
-    fig, axes = plt.subplots(1, 2, figsize=(7.6, 3.0))
-    axes[0].plot(a, anti, color="C3", lw=1.5, label=r"CF head $P_{13}$ (Thm anti-aligned)"); axes[0].plot(a, anti_bayes, color="C0", lw=1.2, ls="--", label="Bayes")
-    axes[0].set_title("anti-aligned construction", fontsize=9)
-    axes[1].plot(a, cat, color="C3", lw=1.5, label=r"CF head $P_{13}$ (Thm catastrophic)"); axes[1].plot(a, cat_bayes, color="C0", lw=1.2, ls="--", label="Bayes (pair 1,3)")
-    axes[1].set_title("catastrophic construction", fontsize=9)
-    for ax in axes:
-        ax.set_xlabel("a"); ax.set_ylabel(r"$P_{13}$"); ax.set_ylim(-0.02, 1.02); ax.legend(fontsize=7, frameon=False)
-    anchors = {str(v): dict(anti=float(_norm.cdf(-1 / np.sqrt(2))), anti_bayes=float(_norm.cdf(-0.5 * np.sqrt((v - 1) ** 2 + 1))),
-                            catastrophic=float(_norm.cdf(-((-v ** 2 + 2 * v + 7) / 6) / np.sqrt((1 + v / 3) ** 2 + 1)))) for v in (1, 2, 3, 5, 10)}
-    data = dict(a=a.tolist(), anti=anti.tolist(), anti_bayes=anti_bayes.tolist(), catastrophic=cat.tolist(), catastrophic_bayes_pair13=cat_bayes.tolist(), anchors=anchors,
-                closed_forms=dict(anti="Phi(-1/sqrt 2)", anti_bayes="Phi(-(1/2) sqrt((a-1)^2+1))", catastrophic="Phi(-((-a^2+2a+7)/6) / sqrt((1+a/3)^2+1))"))
-    return _save(fig, out_dir, "B_fig1c_constructions", data, {})
-
-
-def fig_rate(B: dict, out_dir: Path, src: Path) -> List[Path]:
-    pairs = B.get("rate_pairs") or []; fits = B.get("rate_fits") or {}
-    if not pairs:
-        return []
-    bs = sorted({p["backbone"] for p in pairs})
-    fig, axes = plt.subplots(1, len(bs), figsize=(3.4 * len(bs), 3.1), squeeze=False); data = {}
-    for ax, b in zip(axes[0], bs):
-        P = [p for p in pairs if p["backbone"] == b and p["P"] > 0]
-        x = np.array([p["gamma"] for p in P]); y = np.log(np.array([p["P"] for p in P]))
-        ax.scatter(x, y, s=8, alpha=0.4, color="C0")
-        f = fits.get(b) or {}
-        data[b] = dict(gamma=x.tolist(), logP=y.tolist(), fit=f)
-        if f.get("slope") is not None and x.size:
-            xx = np.linspace(x.min(), x.max(), 50); ax.plot(xx, f["intercept"] + f["slope"] * xx, color="C3", lw=1.2, label=f"OLS slope {f['slope']:.3f}")
-            if f.get("predicted_slope") is not None:
-                yy0 = f["intercept"] + f["slope"] * xx.mean()
-                ax.plot(xx, yy0 + f["predicted_slope"] * (xx - xx.mean()), color="k", lw=1, ls="--", label=rf"$-(\hat\kappa-1)^2/8$ = {f['predicted_slope']:.3f}")
-        ax.set_title(_label(b), fontsize=9); ax.set_xlabel(r"$\hat\gamma_{ij}$"); ax.set_ylabel(r"$\log |P_{ij}|$"); ax.legend(fontsize=7, frameon=False)
-    fig.suptitle(f"Paper B rate validation  [{B.get('optimizer','?')} arm; provenance: {','.join(B.get('provenance', []))}]", fontsize=8)
-    return _save(fig, out_dir, "B_fig_rate", data, {"paperB_results.json": src})
-
-
-def fig_gap_recovery(B: dict, out_dir: Path, src: Path) -> List[Path]:
-    bench = B.get("benchmark") or {}
-    rows = [(k, v) for k, v in bench.items() if v.get("recovery", {}).get("mean") is not None]
-    if not rows:
-        return []
-    fig, ax = plt.subplots(figsize=(max(4.0, 0.55 * len(rows)), 3.0)); data = []
-    for i, (k, v) in enumerate(rows):
-        b, d = k.split("|")
-        r = v["recovery"]["mean"]; rc = (v.get("recovery_c") or {}).get("mean"); sd = v["recovery"].get("sd") or 0.0
-        ax.bar(i - 0.18, r, width=0.36, color="C0", yerr=sd, capsize=2, label="FIX (Def 7.1)" if i == 0 else None)
-        if rc is not None:
-            ax.bar(i + 0.18, rc, width=0.36, color="C2", alpha=0.7, label="FIX_c (scale-matched)" if i == 0 else None)
-        data.append(dict(backbone=b, dataset=d, recovery=r, recovery_sd=sd, recovery_c=rc, head_scale=(v.get("head_scale") or {}).get("mean")))
-    ax.set_xticks(range(len(rows))); ax.set_xticklabels([f"{_label(k.split('|')[0])}\n{_dlabel(k.split('|')[1])}" for k, _ in rows], fontsize=6)
-    ax.axhline(1.0, color="gray", lw=0.6, ls=":"); ax.set_ylabel("gap recovery (FIX - WT)/(J - WT)"); ax.legend(fontsize=7, frameon=False)
-    ax.set_title(f"Paper B fig:gap-recovery  [{B.get('optimizer','?')} arm; provenance: {','.join(B.get('provenance', []))}]", fontsize=8)
-    return _save(fig, out_dir, "B_fig_gap_recovery", data, {"paperB_results.json": src})
-
-
-# ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
 
@@ -354,15 +273,10 @@ def make_all(results_dir: Path, out_dir: Optional[Path] = None, drift_path: Opti
         raise RuntimeError(f"matplotlib is required for the figures: {_MPL_ERR}")
     out_dir = out_dir or results_dir / "figures"
     written: List[Path] = []
-    written += fig1c_constructions(out_dir)
     pa = results_dir / "paperA_results.json"
     if pa.exists():
         A = json.loads(pa.read_text(encoding="utf-8"))
         written += fig_gamma_tc(A, out_dir, pa); written += fig_ecf(A, out_dir, pa); written += fig_alpha(A, out_dir, pa)
-    pb = results_dir / "paperB_results.json"
-    if pb.exists():
-        B = json.loads(pb.read_text(encoding="utf-8"))
-        written += fig_rate(B, out_dir, pb); written += fig_gap_recovery(B, out_dir, pb)
     dp = drift_path or results_dir / "paperA_drift.json"
     if dp.exists():
         written += fig_drift(json.loads(dp.read_text(encoding="utf-8")), out_dir, dp)

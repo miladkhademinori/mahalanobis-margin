@@ -105,7 +105,7 @@ cat <<EOF
   cp -r <frozen repo contents> .          # the tree whose FREEZE_MANIFEST tree hash is $TREE
   git add -A
   git commit -F- <<'MSG'
-Camera-ready replication code for NeurIPS 2026 submissions 4828 (Paper A) and 12500 (Paper B)
+Camera-ready replication code for NeurIPS 2026 submission 4828 (Paper A)
 
 Single import commit of the frozen repository (freeze date 2026-10-31).
 
@@ -126,7 +126,7 @@ if [ "$GIT" = "1" ]; then
     fail "a .git directory already exists here; the single import commit is made on a fresh clone, not on the working repository"
   fi
   git init -q -b main && git add -A && git -c user.name="camera-ready" -c user.email="noreply@example.invalid" commit -q -F- <<EOF && git tag -a camera-ready-freeze-2026-10-31 -m "Frozen for the NeurIPS 2026 camera-ready; FREEZE_MANIFEST tree sha256 $TREE" && pass "import commit and tag created locally (not pushed)"
-Camera-ready replication code for NeurIPS 2026 submissions 4828 (Paper A) and 12500 (Paper B)
+Camera-ready replication code for NeurIPS 2026 submission 4828 (Paper A)
 
 Single import commit of the frozen repository (freeze date 2026-10-31).
 

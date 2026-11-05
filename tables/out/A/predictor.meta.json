@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-22T12:30:30Z",
+ "created_utc": "2026-11-05T13:47:35Z",
  "emitter": "pipeline.tables.predictor_text",
  "g08_class": "POST-HOC text fragment (Section 8, four R2/F cells)",
  "gates": [
@@ -19,5 +19,5 @@
  "supporting_runs": [
   "A_predictor_regression_CI1"
  ],
- "tex_sha256": "8d073aa7935b580275dac19a3c8ea8143350e944ca104bcd189994cb80b3739a"
+ "tex_sha256": "7ea26137647cd219e06d702b157a4aeb19e2b89860b198c8c7c24f143729df20"
 }

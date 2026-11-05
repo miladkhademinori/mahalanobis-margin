@@ -1,8 +1,8 @@
 """tables.build_all -- G08 tables layer: a thin, tested wrapper over pipeline.tables.
 
 Enumerates the results store (``results/runs`` + ``results/INDEX.json`` plus any
-``paperA_results.json`` / ``paperB_results.json`` payloads under ``results/``),
-classifies every live table of Papers A and B per the G08 S1/COUNTS facts
+``paperA_results.json`` payload under ``results/``),
+classifies every live table of Paper A per the G08 S1/COUNTS facts
 (STATIC / POST-HOC / RUN-FED), calls the matching ``pipeline.tables`` emitter for
 each table whose inputs the store can serve, and writes
 
@@ -27,7 +27,7 @@ Classification rules (G08 S1/S6/S7):
   A POST-HOC table that needs per-pair records the store does not carry
   (tab:sens-tasks, G08 S7.3) is reported GATED, never silently dropped.
 
-Exit codes (fleet convention, see experiments/lda_ncm_eval.py):
+Exit codes (fleet convention):
   0  every live table regenerated, FED-BLOCKED, or GATED with a recorded
      reason, and no gate failed;
   1  store regression: a real-provenance payload is missing a POST-HOC
@@ -57,7 +57,7 @@ from pipeline import tables as PT  # noqa: E402  (thin wrapper target; no local 
 EXIT_OK, EXIT_STORE, EXIT_GATE = 0, 1, 2
 
 #: provenance values that may feed RUN-FED tables (G08 S2 vocabulary plus the
-#: pipeline feature-cache value "real" written by pipeline.paper_a/paper_b).
+#: pipeline feature-cache value "real" written by pipeline.paper_a).
 REAL_PROVENANCE = frozenset({"real", "colab", "owner-artifact"})
 
 WATERMARK_NOTE = "synthetic preview: NOT A PAPER NUMBER"
@@ -75,14 +75,6 @@ TAG_A_THEORY = "-1/8 = -0.125 operational"
 TAG_A_THEORY_CONS = "-1/16 = -0.0625 conservative"
 TAG_A_MAIN_BOLD = "within one standard deviation of the column maximum"
 TAG_A_HEADLINE_BOLD = "Bold: best; underlined: best non-bold method"
-TAG_B_STRESS = ("shared-label domains-as-tasks runs (domains sharing one "
-                "$345$-class label set) that violate the disjoint-label-set assumption")
-TAG_B_BOLD = "bold marks the de-centered head"
-TAG_B_PREREG = "aggregates as pre-registered on 2 Aug 2026"
-TAG_B_PAIRS = "$N = 200$ cross-task pairs"
-TAG_B_LDA_ESTIMATOR = ("SLDA-style discriminant vs Sigma = I specialization "
-                       "(caption already fixed)")
-
 #: Paper A tab:diagnostic, Table 11: STATIC symptom table, rows verbatim from
 #: the working TeX (app:diagnostic-table), zero data.
 A_DIAGNOSTIC_ROWS = (
@@ -98,7 +90,7 @@ A_DIAGNOSTIC_ROWS = (
 
 
 class TableSpec:
-    """One live table environment of Papers A/B (G08 S1 enumeration)."""
+    """One live table environment of Paper A (G08 S1 enumeration)."""
 
     __slots__ = ("paper", "label", "cls", "emitter", "needs", "tags", "gates", "blocked_reason")
 
@@ -113,7 +105,7 @@ class TableSpec:
         self.blocked_reason = blocked_reason
 
 
-#: The 19 live tables in float order (G08 S1/COUNTS; spec facts, not measured).
+#: The 11 live tables in float order (G08 S1/COUNTS; spec facts, not measured).
 MANIFEST: List[TableSpec] = [
     TableSpec("A", "tab:headline-comparison", "RUN-FED", None, ("method",),
               (TAG_A_SEEDS, TAG_A_HEADLINE_BOLD), ("owner-fed subset of tab:main",),
@@ -144,27 +136,6 @@ MANIFEST: List[TableSpec] = [
               "needs per-pair gamma_pairs records (G08 S7.3); no payload in the store carries them; "
               "stays gated until the owner logs ship per-pair granularity"),
     TableSpec("A", "tab:diagnostic", "STATIC", "static", (), (), ()),
-    TableSpec("B", "tab:fix-benchmark", "RUN-FED", "tab_fix_benchmark", ("benchmark",),
-              (TAG_A_SEEDS, TAG_B_STRESS, TAG_B_BOLD), (),
-              "inputs MISSING: trained WT/J heads from real runs (B/fix_benchmark/...)"),
-    TableSpec("B", "tab:diagnostic", "RUN-FED", None, ("method_diag",),
-              (TAG_B_BOLD,), (),
-              "inputs MISSING: trained artifacts of the five published methods (B/method_diag/...)"),
-    TableSpec("B", "tab:lda-ncm-comparison", "POST-HOC", "tab_lda_ncm", ("benchmark",),
-              (TAG_A_SEEDS, TAG_B_STRESS, TAG_B_BOLD, TAG_B_LDA_ESTIMATOR), ()),
-    TableSpec("B", "tab:kappa-distribution", "RUN-FED", "tab_kappa", ("kappa",),
-              (TAG_B_PAIRS,), (),
-              "inputs MISSING: per-pair kappa-hat distributions from method artifacts (B/method_diag/...)"),
-    TableSpec("B", "tab:rate-fits", "POST-HOC", "tab_rate_fits", ("rate_fits",),
-              (TAG_B_PAIRS, TAG_B_STRESS), ("ImageNet-R purge + DomainNet aggregation (owner ruling)",)),
-    TableSpec("B", "tab:bias-direction", "POST-HOC", "tab_bias_direction", ("bias_direction",),
-              (TAG_B_PAIRS, TAG_B_STRESS), ()),
-    TableSpec("B", "tab:weights-only", "RUN-FED", "weights_only_text", ("weights_only",),
-              (TAG_A_SEEDS, TAG_B_PREREG), ("two SD cells: FIX+c-hat 85.72, J 85.93 (owner)",),
-              "inputs MISSING: pre-registered weights-only control runs (B/weights_only/...)"),
-    TableSpec("B", "tab:nonvision", "RUN-FED", None, ("nonvision",),
-              (TAG_B_PREREG,), (),
-              "inputs MISSING: owner Newsgroups/MiniLM artifact (B/nonvision/...; results/nonvision_per_seed.csv gated)"),
 ]
 
 #: run-record experiment slugs that support a given table label (store audit).
@@ -174,11 +145,6 @@ EXPERIMENT_TO_TABLES = {
     ("A", "predictor_regression"): ("predictor",),
     ("A", "synthetic_margin"): (),
     ("A", "falsification"): (),
-    ("B", "lda_ncm"): ("tab:lda-ncm-comparison",),
-    ("B", "nonvision"): ("tab:nonvision",),
-    ("B", "diagnostic_controls"): ("tab:diagnostic",),
-    ("B", "synthetic_bias"): ("tab:bias-direction",),
-    ("B", "synthetic_rate"): ("tab:rate-fits",),
 }
 
 
@@ -217,12 +183,6 @@ EMITTERS = {
     "tab_ecf_rates": PT.tab_ecf_rates,
     "tab_alpha_fits": PT.tab_alpha_fits,
     "tab_method_comparison": PT.tab_method_comparison,
-    "tab_fix_benchmark": PT.tab_fix_benchmark,
-    "tab_lda_ncm": PT.tab_lda_ncm,
-    "tab_bias_direction": PT.tab_bias_direction,
-    "tab_rate_fits": PT.tab_rate_fits,
-    "tab_kappa": PT.tab_kappa,
-    "weights_only_text": PT.weights_only_text,
     "static": _emit_static_diagnostic,
 }
 
@@ -272,7 +232,7 @@ def enumerate_store(results_root: Path) -> dict:
         by_experiment.setdefault((rec.get("paper", "?"), rec.get("experiment", "?")), []).append(rec)
 
     payloads = {}
-    for name, paper in (("paperA_results.json", "A"), ("paperB_results.json", "B")):
+    for name, paper in (("paperA_results.json", "A"),):
         found = [p for p in sorted(results_root.rglob(name), key=lambda q: (q.stat().st_mtime, str(q)))]
         if not found:
             continue
@@ -364,12 +324,12 @@ def evaluate_gates(spec: TableSpec, payload: Optional[dict]) -> List[dict]:
 # build
 # ---------------------------------------------------------------------------
 
-def build(argv: Optional[List[str]] = None, paper: str = "both") -> int:
+def build(argv: Optional[List[str]] = None, paper: str = "A") -> int:
     ap = argparse.ArgumentParser(
-        description="Build Paper A/B table fragments from the results store "
+        description="Build Paper A table fragments from the results store "
                     "(thin wrapper over pipeline.tables; G08 spec).")
-    ap.add_argument("--paper", choices=("A", "B", "both"), default=paper,
-                    help="which paper's tables (default: both)")
+    ap.add_argument("--paper", choices=("A",), default="A",
+                    help="which paper's tables (A-only release)")
     ap.add_argument("--check", action="store_true",
                     help="audit only: print the report, write nothing")
     ap.add_argument("--only", default="",
@@ -378,7 +338,7 @@ def build(argv: Optional[List[str]] = None, paper: str = "both") -> int:
     ap.add_argument("--out-dir", type=Path, default=REPO_ROOT / "tables" / "out")
     args = ap.parse_args(argv)
 
-    papers = ("A", "B") if args.paper == "both" else (args.paper,)
+    papers = (args.paper,)
     only = {s.strip() for s in args.only.split(",") if s.strip()}
     specs = [s for s in MANIFEST if s.paper in papers and (not only or s.label in only)]
     if only:
@@ -512,11 +472,10 @@ def build(argv: Optional[List[str]] = None, paper: str = "both") -> int:
             written += [args.out_dir / "A" / "predictor.tex", args.out_dir / "A" / "predictor.meta.json"]
         # DIFF.md via pipeline.tables.diff_report, with a provenance banner
         A = store["payloads"]["A"]["data"] if "A" in store["payloads"] else None
-        B = store["payloads"]["B"]["data"] if "B" in store["payloads"] else None
         banner = ["<!-- tables/build_all.py via pipeline.tables.diff_report -->",
                   f"<!-- payload provenance A: {_provenance_of(A) if A else None}; "
-                  f"B: {_provenance_of(B) if B else None}; synthetic rows are NOT paper numbers -->", ""]
-        (args.out_dir / "DIFF.md").write_text("\n".join(banner) + PT.diff_report(A, B) + "\n", encoding="utf-8")
+                  f"synthetic rows are NOT paper numbers -->", ""]
+        (args.out_dir / "DIFF.md").write_text("\n".join(banner) + PT.diff_report(A) + "\n", encoding="utf-8")
         written.append(args.out_dir / "DIFF.md")
         # sweep: this layer owns tab_*/predictor files only; drop stale ones
         keep = {w.name for w in written}

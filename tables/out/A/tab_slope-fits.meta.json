@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-22T12:30:30Z",
+ "created_utc": "2026-11-05T13:47:35Z",
  "emitter": "pipeline.tables.tab_slope_fits",
  "g08_class": "POST-HOC",
  "gates": [
@@ -18,5 +18,5 @@
  "supporting_runs": [
   "A_slope_fits_synthetic"
  ],
- "tex_sha256": "a0bfb3ab5e50b025b202f742d37a6a03d64138f82b801ad6ec9640c287a45f05"
+ "tex_sha256": "8cd6b09bfb3110f75d9c64260aad872181aed5d2f67956f84198b73990c07edb"
 }
