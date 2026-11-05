@@ -1,0 +1,252 @@
+{
+ "config": {
+  "p": 64,
+  "seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "n_per_class": 3000,
+  "n_checkpoints": 10,
+  "gamma0_true": 8.3,
+  "run_seed_scale_sd": 0.04216867469879518,
+  "run_seed_scale_sd_gamma_units": 0.35,
+  "harness_beta_per_stage": 0.002181818181818182,
+  "harness_mean_inflation": 0.012,
+  "predicted_harness_baseline": 8.201581027667984,
+  "predicted_gap": -0.09841897233201635,
+  "protocol": {
+   "P1": "one-pass: full-sample class means + Ledoit-Wolf pooled covariance at the baseline distribution (G02 S1 / Table 3 app:gamma-computation pipeline)",
+   "P2": "drift-harness: baseline class means re-estimated inside the run; pooled covariance = checkpoint mixture (mean of per-checkpoint LW pooled covariances across the run's stages), carrying between-stage dispersion; layer-norm reference = the baseline batch's own stats (I01's recorded layer_mean/layer_std) shared by all checkpoints (per-checkpoint self-normalisation would cancel the inflation channel exactly -- design note)",
+   "shared": "per seed both paths see the SAME run realization (geometry scale exp(z - z_sd^2/2), z log-sd 0.0422 = 0.35 gamma units); sampling noise independent across paths/batches"
+  }
+ },
+ "assertions": [
+  {
+   "id": "A28",
+   "description": "pure-estimation-noise arm (identical distributions, both paths unbiased for 8.30): two-sample Welch p > 0.4; intervals overlap (the TODO note's own reading)",
+   "measured": 0.9033,
+   "band": "> 0.4",
+   "status": "PASS",
+   "diagnosis": "",
+   "summary": {
+    "P1_mean": 8.39329,
+    "P1_sd": 0.33676,
+    "P2_mean": 8.36577,
+    "P2_sd": 0.35703,
+    "gap_mean": -0.02752,
+    "t": 0.1254,
+    "p_value": 0.90331,
+    "df": 7.97284,
+    "ci95": [
+     7.975144668800851,
+     8.811435331199146
+    ],
+    "ci95_harness": [
+     7.922459931944107,
+     8.80907206805589
+    ]
+   },
+   "intervals_overlap_95": true
+  },
+  {
+   "id": "A29",
+   "description": "systematic arm: 1.2% checkpoint-mixture covariance inflation reproduces the printed gap in sign and magnitude (one-pass 8.3 band [7.9, 8.7]; harness 8.20 band [7.58, 8.82]; gap in [-0.20, -0.02] and within 0.10 of planted -0.0984)",
+   "measured": {
+    "P1_mean": 8.3933,
+    "P2_mean": 8.2665,
+    "gap": -0.1267
+   },
+   "band": "see description",
+   "status": "PASS",
+   "diagnosis": "",
+   "summary": {
+    "P1_mean": 8.39329,
+    "P1_sd": 0.33676,
+    "P2_mean": 8.26655,
+    "P2_sd": 0.3528,
+    "gap_mean": -0.12674,
+    "t": 0.58107,
+    "p_value": 0.57722,
+    "df": 7.98275,
+    "ci95": [
+     7.975144668800851,
+     8.811435331199146
+    ],
+    "ci95_harness": [
+     7.828492166375703,
+     8.704603833624297
+    ]
+   },
+   "planted_inflation_gap": -0.09842
+  },
+  {
+   "id": "A30",
+   "description": "the drift table's secants -8.20 (w=1) / -4.10 (w=2) are the harness-path identity -gamma0_harness/w with gamma0_harness = 8.30/1.012 = 8.2016 (inflation-model prediction within 0.01 of the printed values): the two printed baselines are two estimation paths of one quantity",
+   "measured": {
+    "secant_w1": -8.20158,
+    "secant_w2": -4.10079
+   },
+   "band": "|secant + 8.20| <= 0.01 and |secant + 4.10| <= 0.01",
+   "status": "PASS",
+   "diagnosis": "",
+   "measured_harness_mean": 8.2665,
+   "measured_harness_sd": 0.3528,
+   "shared_seed_note": "a shared-seed note (the TODO's own preferred fix) closes the discrepancy; no canonicalisation forced here."
+  }
+ ],
+ "arms": {
+  "pure_noise": [
+   {
+    "seed": 0,
+    "z": -0.015805,
+    "gamma0_run": 8.16985,
+    "P1": 8.21951,
+    "P2": 8.07273,
+    "gap": -0.14678,
+    "route": "I01"
+   },
+   {
+    "seed": 1,
+    "z": 0.032822,
+    "gamma0_run": 8.57694,
+    "P1": 8.56404,
+    "P2": 8.5631,
+    "gap": -0.00094,
+    "route": "I01"
+   },
+   {
+    "seed": 2,
+    "z": -0.044226,
+    "gamma0_run": 7.94092,
+    "P1": 7.91869,
+    "P2": 7.89652,
+    "gap": -0.02217,
+    "route": "I01"
+   },
+   {
+    "seed": 3,
+    "z": 0.050292,
+    "gamma0_run": 8.7281,
+    "P1": 8.79789,
+    "P2": 8.69964,
+    "gap": -0.09825,
+    "route": "I01"
+   },
+   {
+    "seed": 4,
+    "z": 0.034727,
+    "gamma0_run": 8.5933,
+    "P1": 8.46632,
+    "P2": 8.59684,
+    "gap": 0.13052,
+    "route": "I01"
+   }
+  ],
+  "systematic": [
+   {
+    "seed": 0,
+    "z": -0.015805,
+    "gamma0_run": 8.16985,
+    "P1": 8.21951,
+    "P2": 7.97695,
+    "gap": -0.24257,
+    "route": "I01"
+   },
+   {
+    "seed": 1,
+    "z": 0.032822,
+    "gamma0_run": 8.57694,
+    "P1": 8.56404,
+    "P2": 8.4616,
+    "gap": -0.10244,
+    "route": "I01"
+   },
+   {
+    "seed": 2,
+    "z": -0.044226,
+    "gamma0_run": 7.94092,
+    "P1": 7.91869,
+    "P2": 7.80288,
+    "gap": -0.11581,
+    "route": "I01"
+   },
+   {
+    "seed": 3,
+    "z": 0.050292,
+    "gamma0_run": 8.7281,
+    "P1": 8.79789,
+    "P2": 8.59646,
+    "gap": -0.20143,
+    "route": "I01"
+   },
+   {
+    "seed": 4,
+    "z": 0.034727,
+    "gamma0_run": 8.5933,
+    "P1": 8.46632,
+    "P2": 8.49485,
+    "gap": 0.02854,
+    "route": "I01"
+   }
+  ]
+ },
+ "summary": {
+  "pure_noise": {
+   "P1_mean": 8.393289999999999,
+   "P1_sd": 0.3367620642976287,
+   "P2_mean": 8.365765999999999,
+   "P2_sd": 0.3570257885363468,
+   "gap_mean": -0.027523999999999837,
+   "t": 0.12540062308430305,
+   "p_value": 0.903310759811759,
+   "df": 7.972840762100693,
+   "ci95": [
+    7.975144668800851,
+    8.811435331199146
+   ],
+   "ci95_harness": [
+    7.922459931944107,
+    8.80907206805589
+   ]
+  },
+  "systematic": {
+   "P1_mean": 8.393289999999999,
+   "P1_sd": 0.3367620642976287,
+   "P2_mean": 8.266548,
+   "P2_sd": 0.35279740272570037,
+   "gap_mean": -0.12674199999999977,
+   "t": 0.5810739895863066,
+   "p_value": 0.5772238710745277,
+   "df": 7.982751321740696,
+   "ci95": [
+    7.975144668800851,
+    8.811435331199146
+   ],
+   "ci95_harness": [
+    7.828492166375703,
+    8.704603833624297
+   ]
+  }
+ },
+ "drift_notes": [
+  "H01 core.gaussian_model seed policy imported.",
+  "H04 core.diagnostic gamma_matrix/symmetric_inverse imported.",
+  "H03 core.lda_ncm.shrunk_pooled_covariance imported.",
+  "I01 core.margin.estimate_gamma_min imported."
+ ],
+ "run_id": "A_drift_EX11",
+ "provenance": "synthetic",
+ "paper": "A",
+ "experiment": "drift",
+ "created_utc": "2026-10-22T05:56:25Z",
+ "runtime_s": 223.78,
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

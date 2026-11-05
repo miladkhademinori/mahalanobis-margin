@@ -1,0 +1,2 @@
+5 random class orderings (seeds 0--4)
+population: payload _selftest/paperA_results.json; provenance ['synthetic']; 6 of 12 roster configurations; 2 of 4 random anchors; synthetic preview: NOT A PAPER NUMBER

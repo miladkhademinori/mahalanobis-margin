@@ -1,0 +1,13 @@
+% PROVENANCE ['synthetic']: NOT A PAPER NUMBER
+
+Sequential head (lower, frozen features) & $41.9 \pm 2.1$ & $32.5 \pm 0.5$ & -- & -- \\
+Joint training (upper) & $86.9 \pm 0.0$ & $82.8 \pm 0.1$ & -- & -- \\
+SLDA & $94.4 \pm 0.0$ & $90.6 \pm 0.0$ & -- & -- \\
+SimpleCIL / NCM & $85.2 \pm 0.0$ & $79.0 \pm 0.0$ & -- & -- \\
+FeCAM-style & $81.5 \pm 0.0$ & $75.5 \pm 0.0$ & -- & -- \\
+RanPAC-style & $88.3 \pm 0.8$ & $80.6 \pm 0.2$ & -- & -- \\
+Within-task softmax (AdamW) & $69.8 \pm 1.9$ & $66.3 \pm 0.4$ & -- & -- \\
+Within-task + de-centering (Paper B, Def 7.1) & $37.1 \pm 0.6$ & $33.2 \pm 2.4$ & -- & -- \\
+Diagnostic-guided clipped SGD (ours; diagonal head, Alg. 1) & $83.7 \pm 1.6$ & $79.0 \pm 0.4$ & -- & -- \\
+ours + de-centering & $68.4 \pm 0.4$ & $61.7 \pm 3.7$ & -- & -- \\
+ours, class-IL reading (CE over seen classes) & $42.6 \pm 1.6$ & $32.8 \pm 0.5$ & -- & -- \\

@@ -1,0 +1,932 @@
+{
+ "config": {
+  "sub_stage_dt": 0.1,
+  "windows_stated": [
+   0.48,
+   0.845,
+   1.0,
+   2.0
+  ],
+  "half_threshold_primary": 4.15,
+  "half_threshold_rule": "gamma0_arm/2 recorded alongside",
+  "arm_pinning": {
+   "eta=1e-5": "cubic on 8.30 (G07 crossing/floor math)",
+   "eta=1e-4": "linear on 8.20 (G07 floor math 4.74)",
+   "eta=1e-3": "linear on 8.20 (G07 floor math 0.474)"
+  },
+  "g02_s6_context": {
+   "eta_phi_grid": [
+    1e-05,
+    0.0001,
+    0.001
+   ],
+   "printed_slopes": {
+    "1e-5": -0.164,
+    "1e-4": -1.73
+   },
+   "printed_tstar": [
+    14.2,
+    2.35,
+    0.21
+   ],
+   "printed_time_to_floor_1e3": 0.48,
+   "printed_secants": {
+    "w=1": -8.2,
+    "w=2": -4.1
+   },
+   "sub_stage_windows_iters": {
+    "w=0.845": 845,
+    "w=0.480": 480
+   }
+  }
+ },
+ "assertions": [
+  {
+   "id": "A23a",
+   "description": "arm eta=1e-5: OLS slope over stages 1..10 vs paper -0.164+/-0.012",
+   "measured": -0.219115,
+   "band": [
+    -0.17600000000000002,
+    -0.152
+   ],
+   "status": "FAIL",
+   "diagnosis": "FINDING (flag to owner): G07's arm-1 cubic reproduces its crossing (t*=14.1953 vs 14.2) and floor (19.443 vs 19.5) but its own claimed OLS over stages 1-10 of -0.164 is arithmetically -0.2191. The -0.164 is recovered from a stages-1-5 pre-acceleration window (-0.1620, inside the band) -- the same pre-floor-window reading G07 itself flagged for arm 2. A cubic refit to BOTH -0.164@1..10 and t*=14.2 is 8.30 - 0.023539 t - 0.001333 t^3 but floors at 18.08 (vs 19.5): the three anchors are overdetermined for a 2-parameter cubic through gamma0=8.30."
+  },
+  {
+   "id": "A23b",
+   "description": "arm eta=1e-4: pre-floor OLS slope vs paper -1.73+/-0.14",
+   "measured": -1.73,
+   "band": [
+    -1.87,
+    -1.5899999999999999
+   ],
+   "status": "PASS",
+   "diagnosis": "",
+   "floored_full_window_ols": -0.6685,
+   "floored_window_note": "G07 pilot -0.668 reproduced (wording finding: '-1.73 over the 10-stage trajectory' only holds as a pre-floor-window fit)"
+  },
+  {
+   "id": "A23c1",
+   "description": "eta=1e-5: t* (half-threshold 4.15, linear interpolation) vs paper 14.2+/-1.1",
+   "measured": 14.1953,
+   "band": [
+    13.1,
+    15.299999999999999
+   ],
+   "status": "PASS",
+   "diagnosis": "",
+   "t_star_gamma0_over_2": 14.1953
+  },
+  {
+   "id": "A23c2",
+   "description": "eta=1e-4: t* (half-threshold 4.15, linear interpolation) vs paper 2.35+/-0.2",
+   "measured": 2.341,
+   "band": [
+    2.15,
+    2.5500000000000003
+   ],
+   "status": "PASS",
+   "diagnosis": "",
+   "t_star_gamma0_over_2": 2.3699
+  },
+  {
+   "id": "A23c3",
+   "description": "eta=1e-3: t* (half-threshold 4.15, linear interpolation) vs paper 0.21+/-0.03",
+   "measured": 0.2341,
+   "band": [
+    0.18,
+    0.24
+   ],
+   "status": "PASS",
+   "diagnosis": "",
+   "t_star_gamma0_over_2": 0.237
+  },
+  {
+   "id": "A23d",
+   "description": "arm eta=1e-3: time-to-floor vs paper 0.48+/-0.04",
+   "measured": 0.474,
+   "band": [
+    0.44,
+    0.52
+   ],
+   "status": "PASS",
+   "diagnosis": "",
+   "arm1_floor": 19.443,
+   "arm2_floor": 4.7399
+  },
+  {
+   "id": "A24",
+   "description": "secant identity -gamma0/w exact to 1e-12 (arm eta=1e-3, windows 0.480/0.845/1/2; identity holds by construction since the floored series is exactly 0 for every window >= time-to-floor)",
+   "measured": 0.0,
+   "band": "<= 1e-12",
+   "status": "PASS",
+   "diagnosis": "",
+   "secant_w1": -8.2,
+   "secant_w2": -4.1,
+   "printed": {
+    "w=1": -8.2,
+    "w=2": -4.1
+   },
+   "gamma0_harness_plant": 8.2
+  },
+  {
+   "id": "A25",
+   "description": "t* ratio arm1/arm2 vs 10x eta ratio (sub-linear, paper's own caveat L5051-5056)",
+   "measured": 6.0637,
+   "band": "[5.0, 7.0] and < 10",
+   "status": "PASS",
+   "diagnosis": "",
+   "eta_ratio": 10.0
+  },
+  {
+   "id": "TRK1",
+   "description": "gamma_min(t) tracker (one-pass estimator on DriftStream samples, n=1200/class) vs planted trajectory, max |err|",
+   "measured": 0.2124,
+   "band": "<= 0.35 (estimator-noise gate; plants are noiseless)",
+   "status": "PASS",
+   "diagnosis": "",
+   "mean_abs_err": 0.06216,
+   "n_rows": 70
+  }
+ ],
+ "per_arm": {
+  "eta=1e-5": {
+   "gamma0_plant": 8.3,
+   "t_grid": [
+    0.0,
+    22.0
+   ],
+   "ols": {
+    "window_spec_letter": "integer stages 1..10",
+    "slope_1_to_10": -0.21911480000000008,
+    "slope_1_to_5_prefloor": -0.16196480000000035,
+    "slope_substage_0p1_to_10": -0.2085260479999995
+   },
+   "t_star": {
+    "primary_threshold_4p15": 14.195330416123076,
+    "gamma0_over_2": 14.195330416123076,
+    "paper": 14.2,
+    "tol": 1.1
+   },
+   "time_to_floor": 19.443468842441455,
+   "secants": {
+    "w=0.48": {
+     "secant": -0.13897906999999673,
+     "identity": -17.291666666666668,
+     "abs_diff": 17.15268759666667
+    },
+    "w=0.845": {
+     "secant": -0.13934976721893552,
+     "identity": -9.822485207100593,
+     "abs_diff": 9.683135439881658
+    },
+    "w=1.0": {
+     "secant": -0.13956199999999974,
+     "identity": -8.3,
+     "abs_diff": 8.160438000000001
+    },
+    "w=2.0": {
+     "secant": -0.14184799999999953,
+     "identity": -4.15,
+     "abs_diff": 4.008152000000001
+    }
+   }
+  },
+  "eta=1e-4": {
+   "gamma0_plant": 8.2,
+   "t_grid": [
+    0.0,
+    10.0
+   ],
+   "ols": {
+    "window_spec_letter": "pre-floor window (G07 finding)",
+    "slope_prefloor": -1.7300000000000002,
+    "t_floor_true": 4.739884393063583,
+    "slope_floored_1_to_10": -0.668484848484848,
+    "note": "floored full-window OLS recorded as the G07 arm-2 wording-finding contrast"
+   },
+   "t_star": {
+    "primary_threshold_4p15": 2.341040462427745,
+    "gamma0_over_2": 2.3699421965317917,
+    "paper": 2.35,
+    "tol": 0.2
+   },
+   "time_to_floor": 4.7398843930635834,
+   "secants": {
+    "w=0.48": {
+     "secant": -1.7300000000000002,
+     "identity": -17.083333333333332,
+     "abs_diff": 15.353333333333332
+    },
+    "w=0.845": {
+     "secant": -1.7300000000000002,
+     "identity": -9.70414201183432,
+     "abs_diff": 7.974142011834319
+    },
+    "w=1.0": {
+     "secant": -1.7300000000000004,
+     "identity": -8.2,
+     "abs_diff": 6.469999999999999
+    },
+    "w=2.0": {
+     "secant": -1.73,
+     "identity": -4.1,
+     "abs_diff": 2.3699999999999997
+    }
+   }
+  },
+  "eta=1e-3": {
+   "gamma0_plant": 8.2,
+   "t_grid": [
+    0.0,
+    2.0
+   ],
+   "ols": {
+    "window_spec_letter": "pre-floor window (G07 finding)",
+    "slope_prefloor": -17.300000000000008,
+    "t_floor_true": 0.4739884393063583,
+    "slope_floored_1_to_10": 0.0,
+    "note": "floored full-window OLS recorded as the G07 arm-2 wording-finding contrast"
+   },
+   "t_star": {
+    "primary_threshold_4p15": 0.23410404624277448,
+    "gamma0_over_2": 0.23699421965317913,
+    "paper": 0.21,
+    "tol": 0.03
+   },
+   "time_to_floor": 0.4739884393063583,
+   "secants": {
+    "w=0.48": {
+     "secant": -17.083333333333332,
+     "identity": -17.083333333333332,
+     "abs_diff": 0.0
+    },
+    "w=0.845": {
+     "secant": -9.70414201183432,
+     "identity": -9.70414201183432,
+     "abs_diff": 0.0
+    },
+    "w=1.0": {
+     "secant": -8.2,
+     "identity": -8.2,
+     "abs_diff": 0.0
+    },
+    "w=2.0": {
+     "secant": -4.1,
+     "identity": -4.1,
+     "abs_diff": 0.0
+    }
+   }
+  }
+ },
+ "tracker_rows": [
+  {
+   "arm": "eta=1e-5",
+   "t": 0.0,
+   "seed": 0,
+   "planted": 8.3,
+   "estimated": 8.087624,
+   "err": -0.212376,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 0.0,
+   "seed": 1,
+   "planted": 8.3,
+   "estimated": 8.251366,
+   "err": -0.048634,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 0.0,
+   "seed": 2,
+   "planted": 8.3,
+   "estimated": 8.168817,
+   "err": -0.131183,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 0.0,
+   "seed": 3,
+   "planted": 8.3,
+   "estimated": 8.180988,
+   "err": -0.119012,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 0.0,
+   "seed": 4,
+   "planted": 8.3,
+   "estimated": 8.156905,
+   "err": -0.143095,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 2.0,
+   "seed": 0,
+   "planted": 8.016304,
+   "estimated": 7.950684,
+   "err": -0.06562,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 2.0,
+   "seed": 1,
+   "planted": 8.016304,
+   "estimated": 8.037416,
+   "err": 0.021112,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 2.0,
+   "seed": 2,
+   "planted": 8.016304,
+   "estimated": 7.912635,
+   "err": -0.103669,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 2.0,
+   "seed": 3,
+   "planted": 8.016304,
+   "estimated": 7.974152,
+   "err": -0.042152,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 2.0,
+   "seed": 4,
+   "planted": 8.016304,
+   "estimated": 8.07722,
+   "err": 0.060916,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 4.0,
+   "seed": 0,
+   "planted": 7.696032,
+   "estimated": 7.735192,
+   "err": 0.03916,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 4.0,
+   "seed": 1,
+   "planted": 7.696032,
+   "estimated": 7.681865,
+   "err": -0.014167,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 4.0,
+   "seed": 2,
+   "planted": 7.696032,
+   "estimated": 7.673477,
+   "err": -0.022555,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 4.0,
+   "seed": 3,
+   "planted": 7.696032,
+   "estimated": 7.670657,
+   "err": -0.025375,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 4.0,
+   "seed": 4,
+   "planted": 7.696032,
+   "estimated": 7.583153,
+   "err": -0.112879,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 6.0,
+   "seed": 0,
+   "planted": 7.302608,
+   "estimated": 7.198046,
+   "err": -0.104562,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 6.0,
+   "seed": 1,
+   "planted": 7.302608,
+   "estimated": 7.400572,
+   "err": 0.097964,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 6.0,
+   "seed": 2,
+   "planted": 7.302608,
+   "estimated": 7.244694,
+   "err": -0.057914,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 6.0,
+   "seed": 3,
+   "planted": 7.302608,
+   "estimated": 7.23836,
+   "err": -0.064248,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 6.0,
+   "seed": 4,
+   "planted": 7.302608,
+   "estimated": 7.228485,
+   "err": -0.074123,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 8.0,
+   "seed": 0,
+   "planted": 6.799456,
+   "estimated": 6.780506,
+   "err": -0.01895,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 8.0,
+   "seed": 1,
+   "planted": 6.799456,
+   "estimated": 6.717059,
+   "err": -0.082397,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 8.0,
+   "seed": 2,
+   "planted": 6.799456,
+   "estimated": 6.711763,
+   "err": -0.087693,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 8.0,
+   "seed": 3,
+   "planted": 6.799456,
+   "estimated": 6.739406,
+   "err": -0.06005,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 8.0,
+   "seed": 4,
+   "planted": 6.799456,
+   "estimated": 6.719455,
+   "err": -0.080001,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 10.0,
+   "seed": 0,
+   "planted": 6.15,
+   "estimated": 6.128821,
+   "err": -0.021179,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 10.0,
+   "seed": 1,
+   "planted": 6.15,
+   "estimated": 6.120816,
+   "err": -0.029184,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 10.0,
+   "seed": 2,
+   "planted": 6.15,
+   "estimated": 6.114615,
+   "err": -0.035385,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 10.0,
+   "seed": 3,
+   "planted": 6.15,
+   "estimated": 6.234873,
+   "err": 0.084873,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-5",
+   "t": 10.0,
+   "seed": 4,
+   "planted": 6.15,
+   "estimated": 6.208362,
+   "err": 0.058362,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 0.0,
+   "seed": 0,
+   "planted": 8.2,
+   "estimated": 8.120459,
+   "err": -0.079541,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 0.0,
+   "seed": 1,
+   "planted": 8.2,
+   "estimated": 8.195596,
+   "err": -0.004404,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 0.0,
+   "seed": 2,
+   "planted": 8.2,
+   "estimated": 8.135476,
+   "err": -0.064524,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 0.0,
+   "seed": 3,
+   "planted": 8.2,
+   "estimated": 8.386973,
+   "err": 0.186973,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 0.0,
+   "seed": 4,
+   "planted": 8.2,
+   "estimated": 8.245475,
+   "err": 0.045475,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 1.0,
+   "seed": 0,
+   "planted": 6.47,
+   "estimated": 6.289586,
+   "err": -0.180414,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 1.0,
+   "seed": 1,
+   "planted": 6.47,
+   "estimated": 6.431826,
+   "err": -0.038174,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 1.0,
+   "seed": 2,
+   "planted": 6.47,
+   "estimated": 6.363002,
+   "err": -0.106998,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 1.0,
+   "seed": 3,
+   "planted": 6.47,
+   "estimated": 6.374711,
+   "err": -0.095289,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 1.0,
+   "seed": 4,
+   "planted": 6.47,
+   "estimated": 6.350652,
+   "err": -0.119348,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 2.0,
+   "seed": 0,
+   "planted": 4.74,
+   "estimated": 4.737505,
+   "err": -0.002495,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 2.0,
+   "seed": 1,
+   "planted": 4.74,
+   "estimated": 4.754992,
+   "err": 0.014992,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 2.0,
+   "seed": 2,
+   "planted": 4.74,
+   "estimated": 4.751448,
+   "err": 0.011448,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 2.0,
+   "seed": 3,
+   "planted": 4.74,
+   "estimated": 4.67206,
+   "err": -0.06794,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 2.0,
+   "seed": 4,
+   "planted": 4.74,
+   "estimated": 4.681596,
+   "err": -0.058404,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 3.0,
+   "seed": 0,
+   "planted": 3.01,
+   "estimated": 2.961486,
+   "err": -0.048514,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 3.0,
+   "seed": 1,
+   "planted": 3.01,
+   "estimated": 3.028381,
+   "err": 0.018381,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 3.0,
+   "seed": 2,
+   "planted": 3.01,
+   "estimated": 2.951782,
+   "err": -0.058218,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 3.0,
+   "seed": 3,
+   "planted": 3.01,
+   "estimated": 2.974512,
+   "err": -0.035488,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 3.0,
+   "seed": 4,
+   "planted": 3.01,
+   "estimated": 3.044392,
+   "err": 0.034392,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 4.0,
+   "seed": 0,
+   "planted": 1.28,
+   "estimated": 1.256083,
+   "err": -0.023917,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 4.0,
+   "seed": 1,
+   "planted": 1.28,
+   "estimated": 1.230408,
+   "err": -0.049592,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 4.0,
+   "seed": 2,
+   "planted": 1.28,
+   "estimated": 1.317708,
+   "err": 0.037708,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 4.0,
+   "seed": 3,
+   "planted": 1.28,
+   "estimated": 1.271366,
+   "err": -0.008634,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-4",
+   "t": 4.0,
+   "seed": 4,
+   "planted": 1.28,
+   "estimated": 1.215502,
+   "err": -0.064498,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.0,
+   "seed": 0,
+   "planted": 8.2,
+   "estimated": 8.106036,
+   "err": -0.093964,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.0,
+   "seed": 1,
+   "planted": 8.2,
+   "estimated": 8.214228,
+   "err": 0.014228,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.0,
+   "seed": 2,
+   "planted": 8.2,
+   "estimated": 8.090688,
+   "err": -0.109312,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.0,
+   "seed": 3,
+   "planted": 8.2,
+   "estimated": 8.096547,
+   "err": -0.103453,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.0,
+   "seed": 4,
+   "planted": 8.2,
+   "estimated": 8.121474,
+   "err": -0.078526,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.2,
+   "seed": 0,
+   "planted": 4.74,
+   "estimated": 4.663426,
+   "err": -0.076574,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.2,
+   "seed": 1,
+   "planted": 4.74,
+   "estimated": 4.770259,
+   "err": 0.030259,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.2,
+   "seed": 2,
+   "planted": 4.74,
+   "estimated": 4.683404,
+   "err": -0.056596,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.2,
+   "seed": 3,
+   "planted": 4.74,
+   "estimated": 4.693227,
+   "err": -0.046773,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.2,
+   "seed": 4,
+   "planted": 4.74,
+   "estimated": 4.676263,
+   "err": -0.063737,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.4,
+   "seed": 0,
+   "planted": 1.28,
+   "estimated": 1.247715,
+   "err": -0.032285,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.4,
+   "seed": 1,
+   "planted": 1.28,
+   "estimated": 1.265867,
+   "err": -0.014133,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.4,
+   "seed": 2,
+   "planted": 1.28,
+   "estimated": 1.287705,
+   "err": 0.007705,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.4,
+   "seed": 3,
+   "planted": 1.28,
+   "estimated": 1.244663,
+   "err": -0.035337,
+   "route": "I01"
+  },
+  {
+   "arm": "eta=1e-3",
+   "t": 0.4,
+   "seed": 4,
+   "planted": 1.28,
+   "estimated": 1.266095,
+   "err": -0.013905,
+   "route": "I01"
+  }
+ ],
+ "drift_notes": [
+  "H01 core.gaussian_model seed policy imported.",
+  "H04 core.diagnostic gamma_matrix/symmetric_inverse imported.",
+  "H03 core.lda_ncm.shrunk_pooled_covariance imported.",
+  "I01 core.margin.estimate_gamma_min imported."
+ ],
+ "run_id": "A_drift_EX9",
+ "provenance": "synthetic",
+ "paper": "A",
+ "experiment": "drift",
+ "created_utc": "2026-10-22T05:56:25Z",
+ "runtime_s": 121.77,
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

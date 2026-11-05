@@ -1,0 +1,548 @@
+{
+ "run_id": "A_falsification_synthetic",
+ "paper": "A",
+ "experiment": "falsification",
+ "provenance": "synthetic",
+ "created_utc": "2026-10-22T05:47:42Z",
+ "executed_utc": "2026-10-22T05:47:37Z",
+ "schema": "G08-S2-proposal (G01 not yet reconciled; see G08 log S7.1)",
+ "config": {
+  "g1_noise_sd": 0.05,
+  "g2_bootstrap_B": 1000,
+  "g3_n_null": 90,
+  "g3_n_contam": 10,
+  "g3_n": 400,
+  "g3_d": 20
+ },
+ "seeds": [
+  0
+ ],
+ "metrics": {
+  "suite": "G1+G2+G3",
+  "status": "PASS",
+  "runtime_s": 4.52,
+  "assertions": [
+   {
+    "id": "G1.1",
+    "description": "homogeneous planted common slope -0.115: non-rejection (pooling admissible; single realization)",
+    "arm": "homogeneous",
+    "status": "PASS",
+    "value": "F(2,6) = 0.348, p = 0.7193",
+    "threshold": "p >= 0.05",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G1.2",
+    "description": "planted heterogeneity at paper-context magnitudes (-0.141/-0.099/-0.118 PLANTED, quoted never asserted; noise sd 0.02): rejection",
+    "arm": "heterogeneous",
+    "status": "PASS",
+    "value": "F(2,6) = 55.69, p = 1.34e-04",
+    "threshold": "p < 0.05",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G1.3",
+    "description": "df identity matches the spec: F(2,6) on the 12-config/3-backbone population",
+    "arm": "df-check",
+    "status": "PASS",
+    "value": "df = (2, 6)",
+    "threshold": "(2, 6)",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[planted=-0.3000]",
+    "description": "planted truth -0.3000: gate decision FAIL equals expected FAIL",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12: slope -0.2995 CI [-0.3022, -0.2968]; 16: slope -0.2995 CI [-0.3027, -0.2967]",
+    "threshold": "decision == FAIL",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[planted=-0.1250]",
+    "description": "planted truth -0.1250: gate decision PASS equals expected PASS",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12: slope -0.1239 CI [-0.1268, -0.1213]; 16: slope -0.1239 CI [-0.1272, -0.1214]",
+    "threshold": "decision == PASS",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[planted=-0.0625]",
+    "description": "planted truth -0.0625: gate decision FAIL equals expected FAIL",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12: slope -0.0607 CI [-0.0651, -0.0565]; 16: slope -0.0607 CI [-0.0648, -0.0563]",
+    "threshold": "decision == FAIL",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[planted=-0.0890]",
+    "description": "planted truth -0.0890: gate decision FAIL equals expected FAIL",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12: slope -0.0899 CI [-0.0958, -0.0860]; 16: slope -0.0899 CI [-0.0960, -0.0853]",
+    "threshold": "decision == FAIL",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[trip=-1/16]",
+    "description": "planted -1/16 truth: the CI CONTAINS -0.0625 (the exclusion sub-gate is what trips)",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12-config CI [-0.0673, -0.0596] contains -0.0625: True",
+    "threshold": "lo <= -0.0625 <= hi (containment expected)",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G2[trip=-1/8]",
+    "description": "planted -1/8 truth: the CI CONTAINS -0.125 and EXCLUDES -0.0625 (both sub-conditions hold)",
+    "arm": "planted",
+    "status": "PASS",
+    "value": "12-config CI [-0.1267, -0.1218]",
+    "threshold": "contains -0.125 AND excludes -0.0625",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G3.1",
+    "description": "BH-corrected Mardia family: Gaussian null classes false-positive rate <= 0.10",
+    "arm": "null",
+    "status": "PASS",
+    "value": "false-positive rate 0.033 (3/90 classes)",
+    "threshold": "<= 0.10",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G3.2",
+    "description": "lognormal-contaminated classes BH-rejected (pass-both fails) at >= 0.8",
+    "arm": "contaminated",
+    "status": "PASS",
+    "value": "detection 1.00 (10/10)",
+    "threshold": ">= 0.80",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G3.3",
+    "description": "pass-both fraction recorded in a sane synthetic band (paper typical 75-95% QUOTED context only; with 10% contaminated classes the synthetic mix cannot hit the paper band by construction)",
+    "arm": "family",
+    "status": "PASS",
+    "value": "fraction_pass_both 0.870 (null 0.967, contaminated 0.000)",
+    "threshold": "0.60 <= fraction <= 1.0",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "G3.4",
+    "description": "BH helper identities: adjusted >= raw, monotone in the sorted order",
+    "arm": "helper",
+    "status": "PASS",
+    "value": "adjusted [0.049999999999999996, 0.049999999999999996, 0.049999999999999996, 0.05, 0.5]",
+    "threshold": "adj >= raw and sorted-monotone",
+    "diagnosis": "",
+    "details": {}
+   }
+  ],
+  "suites": [
+   {
+    "suite": "G1-interaction",
+    "theorem": "S8 backbone-slope homogeneity (pooling admissibility)",
+    "status": "PASS",
+    "runtime_s": 0.0,
+    "assertions": [
+     {
+      "id": "G1.1",
+      "description": "homogeneous planted common slope -0.115: non-rejection (pooling admissible; single realization)",
+      "arm": "homogeneous",
+      "status": "PASS",
+      "value": "F(2,6) = 0.348, p = 0.7193",
+      "threshold": "p >= 0.05",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G1.2",
+      "description": "planted heterogeneity at paper-context magnitudes (-0.141/-0.099/-0.118 PLANTED, quoted never asserted; noise sd 0.02): rejection",
+      "arm": "heterogeneous",
+      "status": "PASS",
+      "value": "F(2,6) = 55.69, p = 1.34e-04",
+      "threshold": "p < 0.05",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G1.3",
+      "description": "df identity matches the spec: F(2,6) on the 12-config/3-backbone population",
+      "arm": "df-check",
+      "status": "PASS",
+      "value": "df = (2, 6)",
+      "threshold": "(2, 6)",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "homogeneous": {
+     "F": 0.34831772994528093,
+     "df1": 2,
+     "df2": 6,
+     "p": 0.7192564689129856,
+     "ssr_reduced": 0.004841644169214259,
+     "ssr_full": 0.004337979152259289,
+     "n": 12,
+     "groups": [
+      "CLIP",
+      "DINOv2",
+      "ViT-IN21K"
+     ],
+     "per_backbone_slopes": {
+      "CLIP": -0.11477278120099701,
+      "DINOv2": -0.11160016736111236,
+      "ViT-IN21K": -0.11512628233832818
+     },
+     "pairwise_abs_diffs": {
+      "CLIP|DINOv2": 0.0031726138398846526,
+      "CLIP|ViT-IN21K": 0.0003535011373311664,
+      "DINOv2|ViT-IN21K": 0.003526114977215819
+     },
+     "largest_pairwise": [
+      "DINOv2|ViT-IN21K",
+      0.003526114977215819
+     ],
+     "detectable_diff": 0.010768202286386811,
+     "power_caveat": "F(2,6) non-rejection is weak evidence: with 4 points/backbone only slope differences above ~detectable_diff are reliably flagged (G02 S8 records the paper's own 0.042 undetected diff)."
+    },
+    "heterogeneous": {
+     "F": 55.689733911638854,
+     "df1": 2,
+     "df2": 6,
+     "p": 0.00013356028669951026,
+     "ssr_reduced": 0.0425405943423916,
+     "ssr_full": 0.002174516299891861,
+     "n": 12,
+     "groups": [
+      "CLIP",
+      "DINOv2",
+      "ViT-IN21K"
+     ],
+     "per_backbone_slopes": {
+      "CLIP": -0.12042922858583431,
+      "DINOv2": -0.099861498139917,
+      "ViT-IN21K": -0.14249874696105358
+     },
+     "pairwise_abs_diffs": {
+      "CLIP|DINOv2": 0.02056773044591731,
+      "CLIP|ViT-IN21K": 0.02206951837521927,
+      "DINOv2|ViT-IN21K": 0.04263724882113658
+     },
+     "largest_pairwise": [
+      "DINOv2|ViT-IN21K",
+      0.04263724882113658
+     ],
+     "detectable_diff": 0.007623963507491274,
+     "power_caveat": "F(2,6) non-rejection is weak evidence: with 4 points/backbone only slope differences above ~detectable_diff are reliably flagged (G02 S8 records the paper's own 0.042 undetected diff)."
+    },
+    "quoted_context": {
+     "never_asserted": true,
+     "F_interaction": [
+      2.14,
+      0.199,
+      "(2,6) df"
+     ],
+     "largest_pairwise_slope_diff": 0.042,
+     "ci_targets": {
+      "contains": -0.125,
+      "excludes": [
+       -0.0625,
+       -0.089
+      ]
+     },
+     "pooled_12": [
+      -0.115,
+      [
+       -0.128,
+       -0.102
+      ],
+      0.97
+     ],
+     "pooled_16": [
+      -0.119,
+      [
+       -0.134,
+       -0.105
+      ],
+      0.96
+     ],
+     "mardia_pass_typical": [
+      0.75,
+      0.95
+     ],
+     "mardia_formulas": "(n/6)b_{1,d} ~ chi2_{d(d+1)(d+2)/6}; sqrt(n/(8d(d+2)))(b_{2,d}-d(d+2)) ~ N(0,1)"
+    }
+   },
+   {
+    "suite": "G2-planted",
+    "theorem": "S4 -1/16 falsification check (gate mechanics on planted truths)",
+    "status": "PASS",
+    "runtime_s": 2.49,
+    "assertions": [
+     {
+      "id": "G2[planted=-0.3000]",
+      "description": "planted truth -0.3000: gate decision FAIL equals expected FAIL",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12: slope -0.2995 CI [-0.3022, -0.2968]; 16: slope -0.2995 CI [-0.3027, -0.2967]",
+      "threshold": "decision == FAIL",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G2[planted=-0.1250]",
+      "description": "planted truth -0.1250: gate decision PASS equals expected PASS",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12: slope -0.1239 CI [-0.1268, -0.1213]; 16: slope -0.1239 CI [-0.1272, -0.1214]",
+      "threshold": "decision == PASS",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G2[planted=-0.0625]",
+      "description": "planted truth -0.0625: gate decision FAIL equals expected FAIL",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12: slope -0.0607 CI [-0.0651, -0.0565]; 16: slope -0.0607 CI [-0.0648, -0.0563]",
+      "threshold": "decision == FAIL",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G2[planted=-0.0890]",
+      "description": "planted truth -0.0890: gate decision FAIL equals expected FAIL",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12: slope -0.0899 CI [-0.0958, -0.0860]; 16: slope -0.0899 CI [-0.0960, -0.0853]",
+      "threshold": "decision == FAIL",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G2[trip=-1/16]",
+      "description": "planted -1/16 truth: the CI CONTAINS -0.0625 (the exclusion sub-gate is what trips)",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12-config CI [-0.0673, -0.0596] contains -0.0625: True",
+      "threshold": "lo <= -0.0625 <= hi (containment expected)",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G2[trip=-1/8]",
+      "description": "planted -1/8 truth: the CI CONTAINS -0.125 and EXCLUDES -0.0625 (both sub-conditions hold)",
+      "arm": "planted",
+      "status": "PASS",
+      "value": "12-config CI [-0.1267, -0.1218]",
+      "threshold": "contains -0.125 AND excludes -0.0625",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "per_plant": {
+     "-0.3000": {
+      "populations": {
+       "12": {
+        "slope": -0.299525300754483,
+        "r2": 0.9999902361425682,
+        "ci_lo": -0.3022183357870057,
+        "ci_hi": -0.29676281388391446
+       },
+       "16": {
+        "slope": -0.29953522846435005,
+        "r2": 0.9999918026016948,
+        "ci_lo": -0.302691251782408,
+        "ci_hi": -0.2967385823750324
+       }
+      },
+      "gate_status": "FAIL"
+     },
+     "-0.1250": {
+      "populations": {
+       "12": {
+        "slope": -0.12390810398584284,
+        "r2": 0.999960041176092,
+        "ci_lo": -0.12683611216350993,
+        "ci_hi": -0.12134896681602558
+       },
+       "16": {
+        "slope": -0.12391808270100368,
+        "r2": 0.9999668618728638,
+        "ci_lo": -0.1271862005894746,
+        "ci_hi": -0.12142235772936016
+       }
+      },
+      "gate_status": "PASS"
+     },
+     "-0.0625": {
+      "populations": {
+       "12": {
+        "slope": -0.060720591355976405,
+        "r2": 0.9996098458435794,
+        "ci_lo": -0.06505241492279584,
+        "ci_hi": -0.05646243032753229
+       },
+       "16": {
+        "slope": -0.0607261721738771,
+        "r2": 0.9995534961097658,
+        "ci_lo": -0.06484194064689786,
+        "ci_hi": -0.056325763600110546
+       }
+      },
+      "gate_status": "FAIL"
+     },
+     "-0.0890": {
+      "populations": {
+       "12": {
+        "slope": -0.08988334819313165,
+        "r2": 0.9998557911053608,
+        "ci_lo": -0.09582510674906926,
+        "ci_hi": -0.08604547995877698
+       },
+       "16": {
+        "slope": -0.08989865668005331,
+        "r2": 0.9998613835191361,
+        "ci_lo": -0.0959614474533063,
+        "ci_hi": -0.08530575674618224
+       }
+      },
+      "gate_status": "FAIL"
+     }
+    }
+   },
+   {
+    "suite": "G3-mardia-BH",
+    "theorem": "S8 Gaussianity check (Mardia x BH across classes)",
+    "status": "PASS",
+    "runtime_s": 2.02,
+    "assertions": [
+     {
+      "id": "G3.1",
+      "description": "BH-corrected Mardia family: Gaussian null classes false-positive rate <= 0.10",
+      "arm": "null",
+      "status": "PASS",
+      "value": "false-positive rate 0.033 (3/90 classes)",
+      "threshold": "<= 0.10",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G3.2",
+      "description": "lognormal-contaminated classes BH-rejected (pass-both fails) at >= 0.8",
+      "arm": "contaminated",
+      "status": "PASS",
+      "value": "detection 1.00 (10/10)",
+      "threshold": ">= 0.80",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G3.3",
+      "description": "pass-both fraction recorded in a sane synthetic band (paper typical 75-95% QUOTED context only; with 10% contaminated classes the synthetic mix cannot hit the paper band by construction)",
+      "arm": "family",
+      "status": "PASS",
+      "value": "fraction_pass_both 0.870 (null 0.967, contaminated 0.000)",
+      "threshold": "0.60 <= fraction <= 1.0",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "G3.4",
+      "description": "BH helper identities: adjusted >= raw, monotone in the sorted order",
+      "arm": "helper",
+      "status": "PASS",
+      "value": "adjusted [0.049999999999999996, 0.049999999999999996, 0.049999999999999996, 0.05, 0.5]",
+      "threshold": "adj >= raw and sorted-monotone",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "family_summary": {
+     "fraction_pass_both": 0.87,
+     "fp_rate_null": 0.03333333333333333,
+     "detection_contaminated": 1.0,
+     "n_classes": 100
+    },
+    "quoted_context": {
+     "mardia_pass_typical": [
+      0.75,
+      0.95
+     ]
+    }
+   }
+  ],
+  "paper_context_quoted": {
+   "never_asserted": true,
+   "F_interaction": [
+    2.14,
+    0.199,
+    "(2,6) df"
+   ],
+   "largest_pairwise_slope_diff": 0.042,
+   "ci_targets": {
+    "contains": -0.125,
+    "excludes": [
+     -0.0625,
+     -0.089
+    ]
+   },
+   "pooled_12": [
+    -0.115,
+    [
+     -0.128,
+     -0.102
+    ],
+    0.97
+   ],
+   "pooled_16": [
+    -0.119,
+    [
+     -0.134,
+     -0.105
+    ],
+    0.96
+   ],
+   "mardia_pass_typical": [
+    0.75,
+    0.95
+   ],
+   "mardia_formulas": "(n/6)b_{1,d} ~ chi2_{d(d+1)(d+2)/6}; sqrt(n/(8d(d+2)))(b_{2,d}-d(d+2)) ~ N(0,1)"
+  },
+  "decisions": [
+   "gate semantics per G02 S4/S8; planted truths -0.30/-0.125/-0.0625/-0.089 with pre-declared expected decisions; -0.089 exclusion informational (ungated)"
+  ]
+ },
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "machine": "AMD64",
+  "platform": "Windows-11-10.0.26300-SP0"
+ },
+ "code_version": "4741542c35f13c15",
+ "inputs": {
+  "slope_fits": "731a0ca1b8b9e37f"
+ },
+ "derived_tables": [],
+ "drift_notes": [
+  "experiments.slope_fits imported (I05 sibling; the fit pipeline is owned there).",
+  "derive_seed imported from core.gaussian_model (conftest SEED=0 policy)."
+ ]
+}

@@ -1,0 +1,5 @@
+{
+  "_status": "NOT_IMPLEMENTED_YET",
+  "_note": "Skeleton placeholder created by G09 on 2026-10-21. The 12 Paper A configurations are pending spec from the G02/G03/G06/G07/G08 logs; no values are fabricated. If the spec wave pins a single format, keep the .yaml and delete this file (or vice versa).",
+  "configs": []
+}

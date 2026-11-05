@@ -1,0 +1,774 @@
+{
+ "run_id": "A_synthetic_margin_EX3",
+ "paper": "A",
+ "experiment": "synthetic_margin",
+ "provenance": "synthetic",
+ "created_utc": "2026-10-22T05:30:40Z",
+ "executed_utc": "2026-10-22T05:30:29Z",
+ "schema": "G08-S2-proposal (G01 not yet reconciled; see G08 log S7.1)",
+ "config": {
+  "ex1_T": 10,
+  "ex1_d": 32,
+  "ex1_draws": 200,
+  "ex2_T": 10,
+  "ex2_C": 10,
+  "ex2_p": 32,
+  "ex2_gamma_lo": 4.0,
+  "ex2_gamma_hi": 48.0,
+  "ex2_n_gamma": 12,
+  "ex2_nu": [
+   0.0,
+   0.13,
+   0.23,
+   0.42,
+   0.49,
+   0.51,
+   0.73,
+   0.9
+  ],
+  "ex2_n_mc": 200000,
+  "ex2_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex3_gamma_lo": 16.0,
+  "ex3_gamma_hi": 256.0,
+  "ex3_n_gamma": 10,
+  "ex3_nu": [
+   0.0,
+   0.13,
+   0.23,
+   0.42,
+   0.49,
+   0.51,
+   0.5857864376269049,
+   0.73,
+   0.9
+  ],
+  "ex3_C": 10,
+  "ex3_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex3_doubling_gammas": [
+   16.0,
+   32.0,
+   64.0,
+   128.0
+  ],
+  "ex4_T": 10,
+  "ex4_C": 10,
+  "ex4_p": 32,
+  "ex4_gammas": [
+   5.2,
+   12.1,
+   18.9,
+   31.4,
+   39.1,
+   51.8
+  ],
+  "ex4_n_stats": 2000,
+  "ex4_n_eval": 100000,
+  "ex4_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex4_a10_gamma": 5.2,
+  "ex4_a10_n": [
+   250,
+   1000,
+   4000
+  ],
+  "ex5_T": 10,
+  "ex5_C": 10,
+  "ex5_p": 32,
+  "ex5_ladder": [
+   0.12,
+   0.13,
+   0.15,
+   0.17,
+   0.19,
+   0.23,
+   0.26,
+   0.42,
+   0.49,
+   0.51,
+   0.586,
+   0.73
+  ],
+  "ex5_n_est": 2000,
+  "ex5_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ]
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "metrics": {
+  "suite": "EX3",
+  "theorem": "Corollary 3.8 (constant regimes; 1/8 and 1/16 tight; boundary rows)",
+  "status": "FAIL",
+  "assertions": [
+   {
+    "id": "EX3.1",
+    "description": "(A4) nu=0: slope(log E_TC vs gamma) = -1/8 +- 0.01 (Bhattacharyya 1/8 tight; calibrated CF arm degenerates at nu=0, generative/joint arm gated, labeled)",
+    "arm": "EXACT (erfc algebra)",
+    "status": "PASS",
+    "value": "slope -0.1295 over gamma in [16,256] (deterministic exact algebra; the ~0.0045 offset is the Gaussian-tail log-prefactor, below the 0.005 G07 budget)",
+    "threshold": "-0.125 +- 0.010",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "EX3.2",
+    "description": "(A5) measured-nu = 2-sqrt(2) = 0.5858: slope = -1/16 +- 0.01 (1/16 TIGHT: exact-aligned -(1-nu/2)^2/8 = 1/16)",
+    "arm": "EXACT (erfc algebra)",
+    "status": "PASS",
+    "value": "slope -0.0669; exact-aligned -0.0625 (offset -0.0044 is the tail log-prefactor)",
+    "threshold": "-0.0625 +- 0.010",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "EX3.3",
+    "description": "secondary (recorded, not gated): per-task softmax-calibrated CF head",
+    "arm": "EXACT (recorded)",
+    "status": "PASS",
+    "value": "slope 0.0001 at nu=2-sqrt(2); E_TC(calibrated) -> 1.0 at gamma=256 (non-decaying near-complete cross-task confusion)",
+    "threshold": "recorded (finding)",
+    "diagnosis": "",
+    "details": {
+     "finding": "Per-task softmax calibration of the generative head induces cross-task confusion that does NOT decay with the margin (E_TC -> 1; slope ~ +1e-4): the calibration discounts the true task (its mass spreads over several plausible classes) more than the far task. The calibrated head has an x-dependent bias, outside the paper's prototype-head class (ass:ncm-head) -- consistent with the paper scoping softmax-CE slope experiments as an empirical extension (Remark 4.5)."
+    }
+   },
+   {
+    "id": "EX3.4",
+    "description": "(A6) every planted nu: slope >= -(1-nu)/8 - 0.005 (G07 wording, kept as stated)",
+    "arm": "EXACT",
+    "status": "FAIL",
+    "value": "8/9 nu-rows violate; violating nus [0.13, 0.23, 0.42, 0.49, 0.51, np.float64(0.586), 0.73, 0.9]",
+    "threshold": "0 violations",
+    "diagnosis": "G07 drift note 1: aligned-geometry exact exponent -(1-nu/2)^2/8 is steeper than the interpolating -(1-nu)/8 by nu^2/32, which exceeds the 0.005 tolerance for nu > 0.4 (G07's own pilots imply this). The interpolating form is still a valid UPPER bound pointwise -- see EX3.5, the corrected ratio-validity assertion.",
+    "details": {
+     "violating_nus": [
+      0.13,
+      0.23,
+      0.42,
+      0.49,
+      0.51,
+      0.586,
+      0.73,
+      0.9
+     ]
+    }
+   },
+   {
+    "id": "EX3.5",
+    "description": "(A6b, corrected) pointwise ratio validity: E_TC(g2)/E_TC(g1) <= 1.02 exp(-(1-nu)(g2-g1)/8) on the grid for every planted nu (interpolating form is a valid bound)",
+    "arm": "EXACT",
+    "status": "PASS",
+    "value": "worst ratio/exp-bound 0.9807 (2 pct slack for the tail prefactor; algebra exact)",
+    "threshold": "all consecutive-grid pairs",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "EX3.6",
+    "description": "(A7) boundary rows: slopes within 0.012 of exact-aligned; paper's ~1/16 and ~0.034 readings conservative by 11 pct / 48 pct",
+    "arm": "EXACT",
+    "status": "PASS",
+    "value": {
+     "nu=0.51": {
+      "slope": -0.07386,
+      "exact_aligned": -0.06938,
+      "paper_reading": 0.0625,
+      "conservativeness": 0.11
+     },
+     "nu=0.73": {
+      "slope": -0.0546,
+      "exact_aligned": -0.0504,
+      "paper_reading": 0.034,
+      "conservativeness": 0.482
+     }
+    },
+    "threshold": "|slope - exact-aligned| <= 0.012",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "EX3.7",
+    "description": "(A8) doubling-margin bracket as written: E_TC(2g)/E_TC(g) in [e^{-g/8}/1.2, 1.2 e^{-g/16}] (nu <= 2-sqrt(2))",
+    "arm": "EXACT",
+    "status": "FAIL",
+    "value": "36 doubling pairs; see EX3.8 for the corrected exponent bracket",
+    "threshold": "within bracket",
+    "diagnosis": "The Gaussian-tail prefactor contributes a factor ~2^{-1/4} = 0.84 per doubling (Phi(-sqrt(2)t)/Phi(-t) ~ (1/sqrt(2)) e^{-t^2/2}...), which exceeds the 1.2 lower slack at moderate/large gamma. The bracket's intended content -- WHICH EXPONENT is operative -- is gated cleanly by the local-exponent form EX3.8.",
+    "details": {
+     "rows": [
+      {
+       "nu": 0.0,
+       "gamma": 16.0,
+       "ratio": 0.102807,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.1422
+      },
+      {
+       "nu": 0.0,
+       "gamma": 32.0,
+       "ratio": 0.013541,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.1344
+      },
+      {
+       "nu": 0.0,
+       "gamma": 64.0,
+       "ratio": 0.000243,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.13
+      },
+      {
+       "nu": 0.0,
+       "gamma": 128.0,
+       "ratio": 0.0,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.1273
+      },
+      {
+       "nu": 0.13,
+       "gamma": 16.0,
+       "ratio": 0.113805,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.1358
+      },
+      {
+       "nu": 0.13,
+       "gamma": 32.0,
+       "ratio": 0.018981,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.1239
+      },
+      {
+       "nu": 0.13,
+       "gamma": 64.0,
+       "ratio": 0.000609,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.1157
+      },
+      {
+       "nu": 0.13,
+       "gamma": 128.0,
+       "ratio": 1e-06,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.112
+      },
+      {
+       "nu": 0.23,
+       "gamma": 16.0,
+       "ratio": 0.135851,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.1248
+      },
+      {
+       "nu": 0.23,
+       "gamma": 32.0,
+       "ratio": 0.029331,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.1103
+      },
+      {
+       "nu": 0.23,
+       "gamma": 64.0,
+       "ratio": 0.001359,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.1031
+      },
+      {
+       "nu": 0.23,
+       "gamma": 128.0,
+       "ratio": 3e-06,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.1005
+      },
+      {
+       "nu": 0.42,
+       "gamma": 16.0,
+       "ratio": 0.201144,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.1002
+      },
+      {
+       "nu": 0.42,
+       "gamma": 32.0,
+       "ratio": 0.060559,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0876
+      },
+      {
+       "nu": 0.42,
+       "gamma": 64.0,
+       "ratio": 0.004979,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.0829
+      },
+      {
+       "nu": 0.42,
+       "gamma": 128.0,
+       "ratio": 3.3e-05,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.0806
+      },
+      {
+       "nu": 0.49,
+       "gamma": 16.0,
+       "ratio": 0.230518,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.0917
+      },
+      {
+       "nu": 0.49,
+       "gamma": 32.0,
+       "ratio": 0.076265,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0804
+      },
+      {
+       "nu": 0.49,
+       "gamma": 64.0,
+       "ratio": 0.007699,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.076
+      },
+      {
+       "nu": 0.49,
+       "gamma": 128.0,
+       "ratio": 7.9e-05,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.0738
+      },
+      {
+       "nu": 0.51,
+       "gamma": 16.0,
+       "ratio": 0.239302,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.0894
+      },
+      {
+       "nu": 0.51,
+       "gamma": 32.0,
+       "ratio": 0.081239,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0784
+      },
+      {
+       "nu": 0.51,
+       "gamma": 64.0,
+       "ratio": 0.008689,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.0742
+      },
+      {
+       "nu": 0.51,
+       "gamma": 128.0,
+       "ratio": 0.000101,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.0719
+      },
+      {
+       "nu": 0.5857864376269049,
+       "gamma": 16.0,
+       "ratio": 0.273961,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.0809
+      },
+      {
+       "nu": 0.5857864376269049,
+       "gamma": 32.0,
+       "ratio": 0.102238,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0713
+      },
+      {
+       "nu": 0.5857864376269049,
+       "gamma": 64.0,
+       "ratio": 0.013541,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.0672
+      },
+      {
+       "nu": 0.5857864376269049,
+       "gamma": 128.0,
+       "ratio": 0.000243,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.065
+      }
+     ]
+    }
+   },
+   {
+    "id": "EX3.8",
+    "description": "(A8b, corrected) local doubling exponent c_loc = -log(E_TC(2g)/E_TC(g))/g in [1/16 x 0.85, 1/8 x 1.15] for nu <= 2-sqrt(2)",
+    "arm": "EXACT",
+    "status": "PASS",
+    "value": "c_loc range [0.0650, 0.1422] over 28 pairs; boundary-nu rows recorded (c_loc < 1/16, the Cor 3.8 interpolating regime)",
+    "threshold": "[0.0531, 0.1438]",
+    "diagnosis": "",
+    "details": {
+     "boundary_rows": [
+      {
+       "nu": 0.73,
+       "gamma": 16.0,
+       "ratio": 0.345024,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.0665,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.73,
+       "gamma": 32.0,
+       "ratio": 0.152691,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0587,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.73,
+       "gamma": 64.0,
+       "ratio": 0.029591,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.055,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.73,
+       "gamma": 128.0,
+       "ratio": 0.001151,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.0529,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.9,
+       "gamma": 16.0,
+       "ratio": 0.435666,
+       "bracket": [
+        0.112779,
+        0.441455
+       ],
+       "c_loc": 0.0519,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.9,
+       "gamma": 32.0,
+       "ratio": 0.232041,
+       "bracket": [
+        0.015263,
+        0.162402
+       ],
+       "c_loc": 0.0457,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.9,
+       "gamma": 64.0,
+       "ratio": 0.066992,
+       "bracket": [
+        0.00028,
+        0.021979
+       ],
+       "c_loc": 0.0422,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      },
+      {
+       "nu": 0.9,
+       "gamma": 128.0,
+       "ratio": 0.005811,
+       "bracket": [
+        0.0,
+        0.000403
+       ],
+       "c_loc": 0.0402,
+       "note": "boundary nu: exact exponent below 1/16 (interpolating-form regime), recorded"
+      }
+     ]
+    }
+   }
+  ],
+  "summary": {
+   "slope_rows": [
+    {
+     "nu": 0.0,
+     "slope_joint": -0.12947,
+     "slope_cf": null,
+     "exact_aligned": -0.125,
+     "interpolating": -0.125,
+     "e_joint_first": 0.02275013194817921,
+     "e_joint_last": 6.441149361011384e-16,
+     "e_cal_last": null
+    },
+    {
+     "nu": 0.13,
+     "slope_joint": -0.1151,
+     "slope_cf": 5e-05,
+     "exact_aligned": -0.10928,
+     "interpolating": -0.10875,
+     "e_joint_first": 0.023663857806535477,
+     "e_joint_last": 1.8590438658268614e-14,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.23,
+     "slope_joint": -0.10308,
+     "slope_cf": 5e-05,
+     "exact_aligned": -0.0979,
+     "interpolating": -0.09625,
+     "e_joint_first": 0.025618645900736634,
+     "e_joint_last": 3.603823323443774e-13,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.42,
+     "slope_joint": -0.08264,
+     "slope_cf": 7e-05,
+     "exact_aligned": -0.07801,
+     "interpolating": -0.0725,
+     "e_joint_first": 0.032406843394153964,
+     "e_joint_last": 6.539081477304801e-11,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.49,
+     "slope_joint": -0.07576,
+     "slope_cf": 8e-05,
+     "exact_aligned": -0.07125,
+     "interpolating": -0.06375,
+     "e_joint_first": 0.035954433426929874,
+     "e_joint_last": 3.852855751970531e-10,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.51,
+     "slope_joint": -0.07386,
+     "slope_cf": 8e-05,
+     "exact_aligned": -0.06938,
+     "interpolating": -0.06125,
+     "e_joint_first": 0.03707433802356905,
+     "e_joint_last": 6.305948438312142e-10,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.5857864376269049,
+     "slope_joint": -0.06687,
+     "slope_cf": 0.0001,
+     "exact_aligned": -0.0625,
+     "interpolating": -0.05178,
+     "e_joint_first": 0.041753729467211224,
+     "e_joint_last": 3.854314476880337e-09,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.73,
+     "slope_joint": -0.0546,
+     "slope_cf": 0.00013,
+     "exact_aligned": -0.0504,
+     "interpolating": -0.03375,
+     "e_joint_first": 0.05260451567608845,
+     "e_joint_last": 9.435871707056153e-08,
+     "e_cal_last": 1.0
+    },
+    {
+     "nu": 0.9,
+     "slope_joint": -0.04181,
+     "slope_cf": 0.00018,
+     "exact_aligned": -0.03781,
+     "interpolating": -0.0125,
+     "e_joint_first": 0.06876593712338336,
+     "e_joint_last": 2.7062719538596157e-06,
+     "e_cal_last": 1.0
+    }
+   ],
+   "conservativeness": {
+    "nu=0.51": {
+     "slope": -0.07386,
+     "exact_aligned": -0.06938,
+     "paper_reading": 0.0625,
+     "conservativeness": 0.11
+    },
+    "nu=0.73": {
+     "slope": -0.0546,
+     "exact_aligned": -0.0504,
+     "paper_reading": 0.034,
+     "conservativeness": 0.482
+    }
+   }
+  },
+  "runtime_s": 10.3,
+  "config": {
+   "gamma_grid": [
+    16.0,
+    42.7,
+    69.3,
+    96.0,
+    122.7,
+    149.3,
+    176.0,
+    202.7,
+    229.3,
+    256.0
+   ],
+   "nu_grid": [
+    0.0,
+    0.13,
+    0.23,
+    0.42,
+    0.49,
+    0.51,
+    0.5857864376269049,
+    0.73,
+    0.9
+   ],
+   "C": 10,
+   "seeds": "deterministic (two-point pattern; no sampling axes)",
+   "reduced": false
+  }
+ },
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "machine": "AMD64",
+  "platform": "Windows-11-10.0.26300-SP0"
+ },
+ "code_version": "9d0a545a9d66f60a",
+ "inputs": {
+  "margin": "e33ef149e8f256ee",
+  "streaming": "ddd6c837dad515c7",
+  "gaussian_model": "dbd23d9603b3c6d3",
+  "diagnostic": "62b43609bf7cdd4f"
+ },
+ "derived_tables": [],
+ "drift_notes": [
+  "H01 core.gaussian_model imported (seed policy reused).",
+  "H04 core.diagnostic.gamma_ij imported (exact-arm oracle).",
+  "I01 core.margin imported; using attributes: ['gamma_min'].",
+  "I02 core.streaming present: SKELETON at I03 run time (EX1-EX5 need no streaming; noted for provenance).",
+  "G07-A6 drift: aligned-geometry exact exponent -(1-nu/2)^2/8 is steeper than the interpolating -(1-nu)/8 by nu^2/32, so the stated 0.005 tolerance can only hold for nu <= 0.4 (G07's own pilots imply this); kept as stated with honest FAIL + corrected pointwise ratio assertion.",
+  "G07-A8 drift: the doubling bracket's 1.2 slack is smaller than the Gaussian-tail prefactor factor ~2^{-1/4} per doubling; corrected local-exponent bracket gated alongside.",
+  "G07-A12 drift: the planted 12-row ladder has THREE rows > 1/2 (0.51, 0.586, 0.73), so the operational count is 9/12, not 10/12 (the 10/12 figure mirrors the paper's real Table 4, L3142).",
+  "G07-EX3 pattern: G07's pilot slopes are reproduced exactly by the two-point aligned pattern (C/2 classes at +-s_max); a jittered full-spread pattern adds sibling-class transient contamination up to 0.014 at nu=0.586 over [16,256]. Two-point adopted (deterministic).",
+  "EX2/EX3 head-class finding: the per-task softmax-calibrated head has an x-dependent bias (outside ass:ncm-head) and its cross-task confusion does NOT decay with the margin (E_TC -> 1, slope ~ +1e-4); it is run as a labeled extension arm; the in-scope generative CF head attains gap exactly 0 (feasibility limit) -- consistent with Remark on generative methods (L652-663) and Remark 4.5 scoping."
+ ]
+}

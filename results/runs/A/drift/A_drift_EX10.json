@@ -1,0 +1,53 @@
+{
+ "config": {
+  "points": {
+   "eta": [
+    1e-05,
+    0.0001,
+    0.001
+   ],
+   "m": [
+    0.164,
+    1.73,
+    8.2
+   ]
+  },
+  "note": "|m| at eta=1e-3 is the w=1 floor-saturated secant -gamma0_harness = -8.20 (the saturated rate)"
+ },
+ "assertions": [
+  {
+   "id": "A26",
+   "description": "Pearson r(log|m|, log eta) over the two unsaturated rates plus the saturated secant, paper 0.998",
+   "measured": 0.993102,
+   "band": ">= 0.995",
+   "status": "FAIL",
+   "diagnosis": "FINDING (flag to owner): the 3-point Pearson r on the printed slope set {0.164, 1.73, 8.20} is 0.9931 < 0.995; the paper's 0.998 is not recoverable from the printed table values. Even injecting the paper's own per-seed dispersions (0.012/0.14/0.62, 5 seeds/arm) lowers the expected 15-point r further (~0.988, within-level variance adds to the residual). Either the paper's 0.998 was computed on a different point set (e.g. per-stage slopes) or it is a rounding artifact."
+  },
+  {
+   "id": "A27",
+   "description": "slope ratio eta=1e-4 / eta=1e-5 in [9, 11] (linear in eta, Thm 7.2)",
+   "measured": 10.5488,
+   "band": "[9, 11]",
+   "status": "PASS",
+   "diagnosis": ""
+  }
+ ],
+ "drift_notes": [
+  "H01 core.gaussian_model seed policy imported.",
+  "H04 core.diagnostic gamma_matrix/symmetric_inverse imported.",
+  "H03 core.lda_ncm.shrunk_pooled_covariance imported.",
+  "I01 core.margin.estimate_gamma_min imported."
+ ],
+ "run_id": "A_drift_EX10",
+ "provenance": "synthetic",
+ "paper": "A",
+ "experiment": "drift",
+ "created_utc": "2026-10-22T05:56:25Z",
+ "runtime_s": 0.0,
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "platform": "Windows-11-10.0.26300-SP0"
+ }
+}

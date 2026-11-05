@@ -1,0 +1,1388 @@
+{
+ "run_id": "A_slope_fits_synthetic",
+ "paper": "A",
+ "experiment": "slope_fits",
+ "provenance": "synthetic",
+ "created_utc": "2026-10-22T05:46:55Z",
+ "executed_utc": "2026-10-22T05:43:19Z",
+ "schema": "G08-S2-proposal (G01 not yet reconciled; see G08 log S7.1)",
+ "config": {
+  "s4_planted_slope": -0.3,
+  "s4_noise_sd": 0.05,
+  "s4_bootstrap_B": 1000,
+  "ex6_K": [
+   500,
+   2000,
+   8000,
+   32000
+  ],
+  "ex6_alphas": [
+   1.32,
+   1.45,
+   2.0
+  ],
+  "ex6_reps": 192,
+  "ex6_seeds": [
+   0,
+   1,
+   2
+  ],
+  "ex7_hill_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex8_n_mc": 2000,
+  "ex8_n_K_fine": 800,
+  "ex8_n_mc_fine": 500,
+  "_reduction_note": "D7: slope arms 192 reps x seeds 0-2 (G07 spec 512 x 5, REDUCED; tolerances unchanged, measured deviations 0.004-0.03); A19 Hill keeps its spec 5 seeds"
+ },
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "metrics": {
+  "suite": "S4+EX6+EX7+EX8",
+  "status": "PASS",
+  "runtime_s": 216.62,
+  "assertions": [
+   {
+    "id": "S4.1",
+    "description": "pooled 12-config bootstrap CI contains the planted slope",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "slope -0.2996 CI [-0.3080,-0.2913] (planted -0.3000)",
+    "threshold": "ci_lo <= -0.3000 <= ci_hi",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "S4.2",
+    "description": "pooled 16-config (anchors, own intercept D2) CI contains the planted slope",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "slope -0.2996 CI [-0.3080,-0.2915]",
+    "threshold": "ci_lo <= -0.3000 <= ci_hi",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "S4.3",
+    "description": "pooled R2 > 0.9 at planting noise sd 0.05 (quoted-context paper values 0.97/0.96, never asserted)",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "R2(12) 0.9999, R2(16) 0.9999",
+    "threshold": "both > 0.9",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "S4.4",
+    "description": "12-config pooled fit parameter count matches the spec (4 params, 8 resid df -- the F(2,6) denominator arm)",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "n_params 4, resid_df 8",
+    "threshold": "n_params == 4 and resid_df == 8",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "S4.5",
+    "description": "anchor augmentation shifts the pooled slope by < 0.01 (structure: anchors add an intercept group; quoted-context paper shift 0.004, never asserted)",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "shift 0.0000 (12: -0.2996, 16: -0.2996)",
+    "threshold": "< 0.01",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "S4.6",
+    "description": "per-backbone OLS (4 points each) recovers the planted slope within each backbone CI",
+    "arm": "synthetic-planted",
+    "status": "PASS",
+    "value": "CLIP: -0.2951 [-0.3382,-0.2749]; DINOv2: -0.3063 [-0.3185,-0.2835]; ViT-IN21K: -0.2918 [-0.3138,-0.2500]",
+    "threshold": "each point slope inside its own bootstrap CI",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A15[a=1.32]",
+    "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.2424)",
+    "arm": "clipped",
+    "status": "PASS",
+    "value": "slope -0.2380",
+    "threshold": "|slope - (-0.2424)| <= 0.06",
+    "diagnosis": "",
+    "details": {
+     "Ks": [
+      500,
+      2000,
+      8000,
+      32000
+     ],
+     "losses": [
+      1.4507424263516222,
+      1.0577458067024876,
+      0.7554426638476407,
+      0.5402480615400495
+     ]
+    }
+   },
+   {
+    "id": "A15[a=1.45]",
+    "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.3103)",
+    "arm": "clipped",
+    "status": "PASS",
+    "value": "slope -0.3079",
+    "threshold": "|slope - (-0.3103)| <= 0.06",
+    "diagnosis": "",
+    "details": {
+     "Ks": [
+      500,
+      2000,
+      8000,
+      32000
+     ],
+     "losses": [
+      0.9617380148247312,
+      0.638698753098648,
+      0.4126640922282602,
+      0.26810974113614566
+     ]
+    }
+   },
+   {
+    "id": "A15[a=2.0]",
+    "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.5000)",
+    "arm": "clipped",
+    "status": "PASS",
+    "value": "slope -0.4825",
+    "threshold": "|slope - (-0.5000)| <= 0.06",
+    "diagnosis": "",
+    "details": {
+     "Ks": [
+      500,
+      2000,
+      8000,
+      32000
+     ],
+     "losses": [
+      0.29940650147116377,
+      0.15289342474108786,
+      0.0788172430065765,
+      0.040170367832796226
+     ]
+    }
+   },
+   {
+    "id": "A16",
+    "description": "alpha=1.45 anchor reproduces the -0.31 K-slope within +-0.03 (synthetic analog: paper's measured -0.31 corresponds to effective tail index ~1.45; QUOTED context)",
+    "arm": "clipped",
+    "status": "PASS",
+    "value": "slope -0.3079",
+    "threshold": "|slope - (-0.31)| <= 0.03",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A17[a=1.32]",
+    "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "clipped -0.2360 unclipped -0.2356 |d| 0.0003 (mean-center: -0.2380 vs +0.6940, recorded ungated)",
+    "threshold": "|d| <= 0.05",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A18[a=1.32]",
+    "description": "unclipped P99.5 loss AND cross-rep variance >= 10x clipped at largest K (D6: gated at heavy-tail alphas; alpha=2 recorded informational)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "P99.5x 92, varx 2569736 at K=32000",
+    "threshold": "both >= 10x",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A17[a=1.45]",
+    "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "clipped -0.3059 unclipped -0.3013 |d| 0.0046 (mean-center: -0.3079 vs +0.2489, recorded ungated)",
+    "threshold": "|d| <= 0.05",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A18[a=1.45]",
+    "description": "unclipped P99.5 loss AND cross-rep variance >= 10x clipped at largest K (D6: gated at heavy-tail alphas; alpha=2 recorded informational)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "P99.5x 17, varx 28923129 at K=32000",
+    "threshold": "both >= 10x",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A17[a=2.0]",
+    "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "clipped -0.4819 unclipped -0.4839 |d| 0.0020 (mean-center: -0.4825 vs -0.4425, recorded ungated)",
+    "threshold": "|d| <= 0.05",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A18[a=2.0]",
+    "description": "alpha=2 dispersion ratios (finite-variance regime; informational, D6)",
+    "arm": "unclipped",
+    "status": "PASS",
+    "value": "P99.5x 3, varx 6313",
+    "threshold": "informational (not gated)",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A19[a=1.32]",
+    "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+    "arm": "hill",
+    "status": "PASS",
+    "value": "alpha_hat mean 1.393 per-seed [1.66, 1.399, 1.357, 1.202, 1.348]",
+    "threshold": "|alpha_hat - 1.32| <= 0.25",
+    "diagnosis": "",
+    "details": {
+     "bootstrap_CIs": [
+      [
+       1.2860462205616354,
+       2.2617406298403195
+      ],
+      [
+       1.1028715581661082,
+       1.8856809238831127
+      ],
+      [
+       1.0726815833287087,
+       1.8406429180794337
+      ],
+      [
+       0.9532974680841646,
+       1.6999970296080045
+      ],
+      [
+       1.1290374161321006,
+       1.8398255746837504
+      ]
+     ]
+    }
+   },
+   {
+    "id": "A19[a=1.45]",
+    "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+    "arm": "hill",
+    "status": "PASS",
+    "value": "alpha_hat mean 1.662 per-seed [1.568, 1.437, 1.989, 1.442, 1.877]",
+    "threshold": "|alpha_hat - 1.45| <= 0.25",
+    "diagnosis": "",
+    "details": {
+     "bootstrap_CIs": [
+      [
+       1.2800471947355316,
+       2.2872465401359383
+      ],
+      [
+       1.144891462158035,
+       2.0307581761695164
+      ],
+      [
+       1.5561394177716066,
+       2.6934141405776466
+      ],
+      [
+       1.106942707833593,
+       1.992726256356245
+      ],
+      [
+       1.3517697981361114,
+       2.788452702019243
+      ]
+     ]
+    }
+   },
+   {
+    "id": "A19[a=2.0]",
+    "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+    "arm": "hill",
+    "status": "PASS",
+    "value": "alpha_hat mean 2.160 per-seed [1.961, 2.559, 2.343, 2.125, 1.814]",
+    "threshold": "|alpha_hat - 2.0| <= 0.25",
+    "diagnosis": "",
+    "details": {
+     "bootstrap_CIs": [
+      [
+       1.5141077069447937,
+       2.631068050917921
+      ],
+      [
+       2.053823092963054,
+       3.4410077435715674
+      ],
+      [
+       1.8572670831477256,
+       2.9250289242796903
+      ],
+      [
+       1.7083413926059399,
+       2.7994232676120725
+      ],
+      [
+       1.427910540321384,
+       2.446599762739839
+      ]
+     ]
+    }
+   },
+   {
+    "id": "A20",
+    "description": "E_CF log-log slope identical within 0.03 across the two gamma plants (gamma does not enter E_CF; gates harness leakage)",
+    "arm": "ecf",
+    "status": "PASS",
+    "value": "slopes -0.3054 vs -0.3042 (|d| 0.0011)",
+    "threshold": "|d| <= 0.03",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A21",
+    "description": "measured E_TC_hat = P_hat_shared (1+MC noise) exp(-gamma/16) flat across the fine K grid: |Pearson r| < 0.1 (D8; mirrors paper L1325 -- E_TC has no K dependence)",
+    "arm": "etc",
+    "status": "PASS",
+    "value": "r(8.3) +0.010, r(41.5) +0.014 over 800 K points",
+    "threshold": "|r| < 0.1",
+    "diagnosis": "",
+    "details": {}
+   },
+   {
+    "id": "A22",
+    "description": "total = E_CF + E_TC; subtracting the analytic E_TC recovers E_CF within 3 MC-SE at every K and both gamma plants (additivity gates the estimator)",
+    "arm": "total",
+    "status": "PASS",
+    "value": "worst |z| 2.00",
+    "threshold": "|z| <= 3",
+    "diagnosis": "",
+    "details": {}
+   }
+  ],
+  "suites": [
+   {
+    "suite": "S4-synthetic",
+    "theorem": "empirical slope pipeline (app:slope-results; no theorem)",
+    "status": "PASS",
+    "runtime_s": 0.41,
+    "planted_slope": -0.3,
+    "noise_sd": 0.05,
+    "assertions": [
+     {
+      "id": "S4.1",
+      "description": "pooled 12-config bootstrap CI contains the planted slope",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "slope -0.2996 CI [-0.3080,-0.2913] (planted -0.3000)",
+      "threshold": "ci_lo <= -0.3000 <= ci_hi",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "S4.2",
+      "description": "pooled 16-config (anchors, own intercept D2) CI contains the planted slope",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "slope -0.2996 CI [-0.3080,-0.2915]",
+      "threshold": "ci_lo <= -0.3000 <= ci_hi",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "S4.3",
+      "description": "pooled R2 > 0.9 at planting noise sd 0.05 (quoted-context paper values 0.97/0.96, never asserted)",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "R2(12) 0.9999, R2(16) 0.9999",
+      "threshold": "both > 0.9",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "S4.4",
+      "description": "12-config pooled fit parameter count matches the spec (4 params, 8 resid df -- the F(2,6) denominator arm)",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "n_params 4, resid_df 8",
+      "threshold": "n_params == 4 and resid_df == 8",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "S4.5",
+      "description": "anchor augmentation shifts the pooled slope by < 0.01 (structure: anchors add an intercept group; quoted-context paper shift 0.004, never asserted)",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "shift 0.0000 (12: -0.2996, 16: -0.2996)",
+      "threshold": "< 0.01",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "S4.6",
+      "description": "per-backbone OLS (4 points each) recovers the planted slope within each backbone CI",
+      "arm": "synthetic-planted",
+      "status": "PASS",
+      "value": "CLIP: -0.2951 [-0.3382,-0.2749]; DINOv2: -0.3063 [-0.3185,-0.2835]; ViT-IN21K: -0.2918 [-0.3138,-0.2500]",
+      "threshold": "each point slope inside its own bootstrap CI",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "per_backbone": {
+     "CLIP": {
+      "n": 4,
+      "slope": -0.29508714835830513,
+      "intercept": -0.33225528214029243,
+      "r2": 0.9985750611993267,
+      "ssr": 0.010368821973121584,
+      "sst": 7.27667880769473,
+      "resid_df": 2,
+      "se_slope": 0.007882120065680913,
+      "sigma_hat": 0.07200285401677348,
+      "datasets": [
+       "Split-CIFAR-100",
+       "Split-ImageNet-R",
+       "Split-CUB-200",
+       "Split-OmniBenchmark"
+      ]
+     },
+     "DINOv2": {
+      "n": 4,
+      "slope": -0.3063324593526376,
+      "intercept": -0.27785134258725286,
+      "r2": 0.9997170371684001,
+      "ssr": 0.002237135270725356,
+      "sst": 7.906109993586757,
+      "resid_df": 2,
+      "se_slope": 0.0036442164942097053,
+      "sigma_hat": 0.033444994174953564,
+      "datasets": [
+       "Split-CIFAR-100",
+       "Split-ImageNet-R",
+       "Split-CUB-200",
+       "Split-OmniBenchmark"
+      ]
+     },
+     "ViT-IN21K": {
+      "n": 4,
+      "slope": -0.29175423895569047,
+      "intercept": 0.013191569619089627,
+      "r2": 0.9963004446310456,
+      "ssr": 0.007819756902755834,
+      "sst": 2.113701816271468,
+      "resid_df": 2,
+      "se_slope": 0.01257134602821481,
+      "sigma_hat": 0.06252902087333462,
+      "datasets": [
+       "Split-CIFAR-100",
+       "Split-ImageNet-R",
+       "Split-CUB-200",
+       "Split-OmniBenchmark"
+      ]
+     }
+    },
+    "bootstrap_per_backbone": {
+     "CLIP": {
+      "point": -0.29508714835830513,
+      "r2": 0.9985750611993267,
+      "n": 4,
+      "B": 987,
+      "ci_lo": -0.338172055293812,
+      "ci_hi": -0.27492619590248146
+     },
+     "DINOv2": {
+      "point": -0.3063324593526376,
+      "r2": 0.9997170371684001,
+      "n": 4,
+      "B": 990,
+      "ci_lo": -0.31853205426789927,
+      "ci_hi": -0.2835328971267675
+     },
+     "ViT-IN21K": {
+      "point": -0.29175423895569047,
+      "r2": 0.9963004446310456,
+      "n": 4,
+      "B": 987,
+      "ci_lo": -0.31379532614074457,
+      "ci_hi": -0.24999503904352915
+     }
+    },
+    "pooled_12": {
+     "n": 12,
+     "groups": [
+      "CLIP",
+      "DINOv2",
+      "ViT-IN21K"
+     ],
+     "slope": -0.2995811236365031,
+     "intercepts": {
+      "CLIP": -0.2202429483312098,
+      "DINOv2": -0.5862186014216955,
+      "ViT-IN21K": 0.08206815481024077
+     },
+     "r2": 0.9999063227311679,
+     "ssr": 0.027465714205183206,
+     "sst": 293.1950786736452,
+     "n_params": 4,
+     "resid_df": 8,
+     "anchor_mode": "own_intercept",
+     "population": "12",
+     "sigma_hat": 0.05859363681875277,
+     "bootstrap": {
+      "B": 1000,
+      "level": 0.95,
+      "unit": "configuration",
+      "stratified": true,
+      "n_valid": 1000,
+      "n_degenerate": 0,
+      "ci_lo": -0.3080335442020685,
+      "ci_hi": -0.29134328506650453,
+      "boot_mean": -0.2992858329894642,
+      "boot_sd": 0.004627707705748101
+     }
+    },
+    "pooled_16": {
+     "n": 16,
+     "groups": [
+      "CLIP",
+      "DINOv2",
+      "ViT-IN21K",
+      "random-anchor-ViT"
+     ],
+     "slope": -0.2995813690821126,
+     "intercepts": {
+      "CLIP": -0.22023683059938629,
+      "DINOv2": -0.5862073906934666,
+      "ViT-IN21K": 0.0820703147316072,
+      "random-anchor-ViT": -1.3395115371317827
+     },
+     "r2": 0.9999335026379683,
+     "ssr": 0.028483824641694563,
+     "sst": 428.3451819957479,
+     "n_params": 5,
+     "resid_df": 11,
+     "anchor_mode": "own_intercept",
+     "population": "16",
+     "sigma_hat": 0.0508865267412742,
+     "bootstrap": {
+      "B": 1000,
+      "level": 0.95,
+      "unit": "configuration",
+      "stratified": true,
+      "n_valid": 1000,
+      "n_degenerate": 0,
+      "ci_lo": -0.3080419510850845,
+      "ci_hi": -0.2914930152766124,
+      "boot_mean": -0.29949878794579066,
+      "boot_sd": 0.004694943658337901
+     }
+    },
+    "pooled_16_vit_shared": {
+     "n": 16,
+     "groups": [
+      "CLIP",
+      "DINOv2",
+      "ViT-IN21K"
+     ],
+     "slope": -0.22798555269615806,
+     "intercepts": {
+      "CLIP": -2.0047625540193037,
+      "DINOv2": -3.8563463041219377,
+      "ViT-IN21K": -0.9579718718049954
+     },
+     "r2": 0.9944907226977965,
+     "ssr": 2.3598723886774016,
+     "sst": 428.3451819957479,
+     "n_params": 4,
+     "resid_df": 12,
+     "anchor_mode": "vit_shared",
+     "population": "16",
+     "sigma_hat": 0.4434591665416146
+    },
+    "sensitivity_unstratified_12": {
+     "B": 1000,
+     "level": 0.95,
+     "unit": "configuration",
+     "stratified": false,
+     "n_valid": 1000,
+     "n_degenerate": 0,
+     "ci_lo": -0.30763430761940147,
+     "ci_hi": -0.29095353353653797,
+     "boot_mean": -0.29937148405007064,
+     "boot_sd": 0.004887136356162543
+    },
+    "unit_note": "D1: bootstrap unit = configuration, stratified by backbone group (anchors their own stratum in 16).",
+    "records": [
+     {
+      "backbone": "ViT-IN21K",
+      "dataset": "Split-CIFAR-100",
+      "anchor": false,
+      "gamma_min_hat": 8.3,
+      "log_tc_gap": -2.4395335091181076,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "ViT-IN21K",
+      "dataset": "Split-ImageNet-R",
+      "anchor": false,
+      "gamma_min_hat": 5.2,
+      "log_tc_gap": -1.4667679980817994,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "ViT-IN21K",
+      "dataset": "Split-CUB-200",
+      "anchor": false,
+      "gamma_min_hat": 12.1,
+      "log_tc_gap": -3.4678345115864317,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "ViT-IN21K",
+      "dataset": "Split-OmniBenchmark",
+      "anchor": false,
+      "gamma_min_hat": 9.6,
+      "log_tc_gap": -2.842846913977609,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "DINOv2",
+      "dataset": "Split-CIFAR-100",
+      "anchor": false,
+      "gamma_min_hat": 47.2,
+      "log_tc_gap": -14.69724783183481,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "DINOv2",
+      "dataset": "Split-ImageNet-R",
+      "anchor": false,
+      "gamma_min_hat": 39.1,
+      "log_tc_gap": -12.25854028146874,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "DINOv2",
+      "dataset": "Split-CUB-200",
+      "anchor": false,
+      "gamma_min_hat": 51.8,
+      "log_tc_gap": -16.162495281467145,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "DINOv2",
+      "dataset": "Split-OmniBenchmark",
+      "anchor": false,
+      "gamma_min_hat": 44.6,
+      "log_tc_gap": -13.960062299305214,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "CLIP",
+      "dataset": "Split-CIFAR-100",
+      "anchor": false,
+      "gamma_min_hat": 23.1,
+      "log_tc_gap": -7.088254460893727,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "CLIP",
+      "dataset": "Split-ImageNet-R",
+      "anchor": false,
+      "gamma_min_hat": 18.9,
+      "log_tc_gap": -5.918021684219965,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "CLIP",
+      "dataset": "Split-CUB-200",
+      "anchor": false,
+      "gamma_min_hat": 31.4,
+      "log_tc_gap": -9.57252863693658,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "CLIP",
+      "dataset": "Split-OmniBenchmark",
+      "anchor": false,
+      "gamma_min_hat": 26.3,
+      "log_tc_gap": -8.170405037833925,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "random-anchor-ViT",
+      "dataset": "Split-CIFAR-100",
+      "anchor": true,
+      "gamma_min_hat": 0.31,
+      "log_tc_gap": -1.4491819434061546,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "random-anchor-ViT",
+      "dataset": "Split-ImageNet-R",
+      "anchor": true,
+      "gamma_min_hat": 0.28,
+      "log_tc_gap": -1.4214888525118505,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "random-anchor-ViT",
+      "dataset": "Split-CUB-200",
+      "anchor": true,
+      "gamma_min_hat": 0.58,
+      "log_tc_gap": -1.523446743116314,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     },
+     {
+      "backbone": "random-anchor-ViT",
+      "dataset": "Split-OmniBenchmark",
+      "anchor": true,
+      "gamma_min_hat": 0.42,
+      "log_tc_gap": -1.4402629863333714,
+      "tc_gap": null,
+      "provenance": "synthetic-planted",
+      "source": ""
+     }
+    ]
+   },
+   {
+    "suite": "EX6",
+    "theorem": "Prop 5.1 (clipped SGD rate K^{-(alpha-1)/alpha})",
+    "status": "PASS",
+    "runtime_s": 71.11,
+    "assertions": [
+     {
+      "id": "A15[a=1.32]",
+      "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.2424)",
+      "arm": "clipped",
+      "status": "PASS",
+      "value": "slope -0.2380",
+      "threshold": "|slope - (-0.2424)| <= 0.06",
+      "diagnosis": "",
+      "details": {
+       "Ks": [
+        500,
+        2000,
+        8000,
+        32000
+       ],
+       "losses": [
+        1.4507424263516222,
+        1.0577458067024876,
+        0.7554426638476407,
+        0.5402480615400495
+       ]
+      }
+     },
+     {
+      "id": "A15[a=1.45]",
+      "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.3103)",
+      "arm": "clipped",
+      "status": "PASS",
+      "value": "slope -0.3079",
+      "threshold": "|slope - (-0.3103)| <= 0.06",
+      "diagnosis": "",
+      "details": {
+       "Ks": [
+        500,
+        2000,
+        8000,
+        32000
+       ],
+       "losses": [
+        0.9617380148247312,
+        0.638698753098648,
+        0.4126640922282602,
+        0.26810974113614566
+       ]
+      }
+     },
+     {
+      "id": "A15[a=2.0]",
+      "description": "clipped log-log slope = -(alpha-1)/alpha +- 0.06 (theory -0.5000)",
+      "arm": "clipped",
+      "status": "PASS",
+      "value": "slope -0.4825",
+      "threshold": "|slope - (-0.5000)| <= 0.06",
+      "diagnosis": "",
+      "details": {
+       "Ks": [
+        500,
+        2000,
+        8000,
+        32000
+       ],
+       "losses": [
+        0.29940650147116377,
+        0.15289342474108786,
+        0.0788172430065765,
+        0.040170367832796226
+       ]
+      }
+     },
+     {
+      "id": "A16",
+      "description": "alpha=1.45 anchor reproduces the -0.31 K-slope within +-0.03 (synthetic analog: paper's measured -0.31 corresponds to effective tail index ~1.45; QUOTED context)",
+      "arm": "clipped",
+      "status": "PASS",
+      "value": "slope -0.3079",
+      "threshold": "|slope - (-0.31)| <= 0.03",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "per_alpha": {
+     "1.32": {
+      "losses": [
+       1.4507424263516222,
+       1.0577458067024876,
+       0.7554426638476407,
+       0.5402480615400495
+      ],
+      "slope": -0.2380445651638858,
+      "theory": -0.24242424242424246
+     },
+     "1.45": {
+      "losses": [
+       0.9617380148247312,
+       0.638698753098648,
+       0.4126640922282602,
+       0.26810974113614566
+      ],
+      "slope": -0.30793143256773586,
+      "theory": -0.31034482758620685
+     },
+     "2.0": {
+      "losses": [
+       0.29940650147116377,
+       0.15289342474108786,
+       0.0788172430065765,
+       0.040170367832796226
+      ],
+      "slope": -0.4824824544982567,
+      "theory": -0.5
+     }
+    },
+    "reduction_note": "D7: slope arms 192 reps x seeds 0-2 (G07 spec 512 x 5, REDUCED; tolerances unchanged, measured deviations 0.004-0.03); A19 Hill keeps its spec 5 seeds"
+   },
+   {
+    "suite": "EX7",
+    "theorem": "Prop 5.1 clipping effect + app:alpha-estimation Hill pipeline",
+    "status": "PASS",
+    "runtime_s": 101.13,
+    "assertions": [
+     {
+      "id": "A17[a=1.32]",
+      "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "clipped -0.2360 unclipped -0.2356 |d| 0.0003 (mean-center: -0.2380 vs +0.6940, recorded ungated)",
+      "threshold": "|d| <= 0.05",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A18[a=1.32]",
+      "description": "unclipped P99.5 loss AND cross-rep variance >= 10x clipped at largest K (D6: gated at heavy-tail alphas; alpha=2 recorded informational)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "P99.5x 92, varx 2569736 at K=32000",
+      "threshold": "both >= 10x",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A17[a=1.45]",
+      "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "clipped -0.3059 unclipped -0.3013 |d| 0.0046 (mean-center: -0.3079 vs +0.2489, recorded ungated)",
+      "threshold": "|d| <= 0.05",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A18[a=1.45]",
+      "description": "unclipped P99.5 loss AND cross-rep variance >= 10x clipped at largest K (D6: gated at heavy-tail alphas; alpha=2 recorded informational)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "P99.5x 17, varx 28923129 at K=32000",
+      "threshold": "both >= 10x",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A17[a=2.0]",
+      "description": "unclipped slope matches clipped within 0.05 (D3: median-center; mean-center recorded alongside)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "clipped -0.4819 unclipped -0.4839 |d| 0.0020 (mean-center: -0.4825 vs -0.4425, recorded ungated)",
+      "threshold": "|d| <= 0.05",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A18[a=2.0]",
+      "description": "alpha=2 dispersion ratios (finite-variance regime; informational, D6)",
+      "arm": "unclipped",
+      "status": "PASS",
+      "value": "P99.5x 3, varx 6313",
+      "threshold": "informational (not gated)",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A19[a=1.32]",
+      "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+      "arm": "hill",
+      "status": "PASS",
+      "value": "alpha_hat mean 1.393 per-seed [1.66, 1.399, 1.357, 1.202, 1.348]",
+      "threshold": "|alpha_hat - 1.32| <= 0.25",
+      "diagnosis": "",
+      "details": {
+       "bootstrap_CIs": [
+        [
+         1.2860462205616354,
+         2.2617406298403195
+        ],
+        [
+         1.1028715581661082,
+         1.8856809238831127
+        ],
+        [
+         1.0726815833287087,
+         1.8406429180794337
+        ],
+        [
+         0.9532974680841646,
+         1.6999970296080045
+        ],
+        [
+         1.1290374161321006,
+         1.8398255746837504
+        ]
+       ]
+      }
+     },
+     {
+      "id": "A19[a=1.45]",
+      "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+      "arm": "hill",
+      "status": "PASS",
+      "value": "alpha_hat mean 1.662 per-seed [1.568, 1.437, 1.989, 1.442, 1.877]",
+      "threshold": "|alpha_hat - 1.45| <= 0.25",
+      "diagnosis": "",
+      "details": {
+       "bootstrap_CIs": [
+        [
+         1.2800471947355316,
+         2.2872465401359383
+        ],
+        [
+         1.144891462158035,
+         2.0307581761695164
+        ],
+        [
+         1.5561394177716066,
+         2.6934141405776466
+        ],
+        [
+         1.106942707833593,
+         1.992726256356245
+        ],
+        [
+         1.3517697981361114,
+         2.788452702019243
+        ]
+       ]
+      }
+     },
+     {
+      "id": "A19[a=2.0]",
+      "description": "Hill pipeline (1,000 warm-up iters, top 5%, k=50, 1,000-resample bootstrap) recovers planted alpha within +-0.25 (D4 max-abs coordinate; D5-rev eta_warm 0.05 noise-dominated; 5-seed mean per G07's 2.5-sigma gate)",
+      "arm": "hill",
+      "status": "PASS",
+      "value": "alpha_hat mean 2.160 per-seed [1.961, 2.559, 2.343, 2.125, 1.814]",
+      "threshold": "|alpha_hat - 2.0| <= 0.25",
+      "diagnosis": "",
+      "details": {
+       "bootstrap_CIs": [
+        [
+         1.5141077069447937,
+         2.631068050917921
+        ],
+        [
+         2.053823092963054,
+         3.4410077435715674
+        ],
+        [
+         1.8572670831477256,
+         2.9250289242796903
+        ],
+        [
+         1.7083413926059399,
+         2.7994232676120725
+        ],
+        [
+         1.427910540321384,
+         2.446599762739839
+        ]
+       ]
+      }
+     }
+    ],
+    "per_alpha": {
+     "1.32": {
+      "median_clipped_slope": -0.23597943458348924,
+      "median_unclipped_slope": -0.23563477662428628,
+      "mean_clipped_slope": -0.23804456516388586,
+      "mean_unclipped_slope": 0.6940203571696197,
+      "p995_ratio": 92.25335389512937,
+      "var_ratio": 2569736.4018032444
+     },
+     "1.45": {
+      "median_clipped_slope": -0.30594410516048465,
+      "median_unclipped_slope": -0.301324531315349,
+      "mean_clipped_slope": -0.30793143256773586,
+      "mean_unclipped_slope": 0.24893591352818623,
+      "p995_ratio": 17.102996409054494,
+      "var_ratio": 28923129.278820522
+     },
+     "2.0": {
+      "median_clipped_slope": -0.48194604945631925,
+      "median_unclipped_slope": -0.4839409143475989,
+      "mean_clipped_slope": -0.4824824544982567,
+      "mean_unclipped_slope": -0.4424938965187064,
+      "p995_ratio": 3.4375689848651567,
+      "var_ratio": 6312.915144393211
+     }
+    },
+    "hill": {
+     "1.32": [
+      {
+       "alpha_hat": 1.6602992445365252,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.2860462205616354,
+       "ci_hi": 2.2617406298403195
+      },
+      {
+       "alpha_hat": 1.3985659279202796,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.1028715581661082,
+       "ci_hi": 1.8856809238831127
+      },
+      {
+       "alpha_hat": 1.356923082031754,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.0726815833287087,
+       "ci_hi": 1.8406429180794337
+      },
+      {
+       "alpha_hat": 1.2019319516614493,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 0.9532974680841646,
+       "ci_hi": 1.6999970296080045
+      },
+      {
+       "alpha_hat": 1.347838044696532,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.1290374161321006,
+       "ci_hi": 1.8398255746837504
+      }
+     ],
+     "1.45": [
+      {
+       "alpha_hat": 1.5681861831469357,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.2800471947355316,
+       "ci_hi": 2.2872465401359383
+      },
+      {
+       "alpha_hat": 1.4368646350107133,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.144891462158035,
+       "ci_hi": 2.0307581761695164
+      },
+      {
+       "alpha_hat": 1.9887625746746411,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.5561394177716066,
+       "ci_hi": 2.6934141405776466
+      },
+      {
+       "alpha_hat": 1.4416011786605536,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.106942707833593,
+       "ci_hi": 1.992726256356245
+      },
+      {
+       "alpha_hat": 1.876713361963362,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.3517697981361114,
+       "ci_hi": 2.788452702019243
+      }
+     ],
+     "2.0": [
+      {
+       "alpha_hat": 1.9612712931516856,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.5141077069447937,
+       "ci_hi": 2.631068050917921
+      },
+      {
+       "alpha_hat": 2.558812576156096,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 2.053823092963054,
+       "ci_hi": 3.4410077435715674
+      },
+      {
+       "alpha_hat": 2.3426645856812023,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.8572670831477256,
+       "ci_hi": 2.9250289242796903
+      },
+      {
+       "alpha_hat": 2.1247408448056877,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.7083413926059399,
+       "ci_hi": 2.7994232676120725
+      },
+      {
+       "alpha_hat": 1.8141801627024112,
+       "k": 50,
+       "k_warm": 1000,
+       "ci_lo": 1.427910540321384,
+       "ci_hi": 2.446599762739839
+      }
+     ]
+    },
+    "reduction_note": "D7: slope arms 192 reps x seeds 0-2 (G07 spec 512 x 5, REDUCED; tolerances unchanged, measured deviations 0.004-0.03); A19 Hill keeps its spec 5 seeds"
+   },
+   {
+    "suite": "EX8",
+    "theorem": "Thm 6.4 (E_CF/E_TC disjoint dependence)",
+    "status": "PASS",
+    "runtime_s": 43.97,
+    "assertions": [
+     {
+      "id": "A20",
+      "description": "E_CF log-log slope identical within 0.03 across the two gamma plants (gamma does not enter E_CF; gates harness leakage)",
+      "arm": "ecf",
+      "status": "PASS",
+      "value": "slopes -0.3054 vs -0.3042 (|d| 0.0011)",
+      "threshold": "|d| <= 0.03",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A21",
+      "description": "measured E_TC_hat = P_hat_shared (1+MC noise) exp(-gamma/16) flat across the fine K grid: |Pearson r| < 0.1 (D8; mirrors paper L1325 -- E_TC has no K dependence)",
+      "arm": "etc",
+      "status": "PASS",
+      "value": "r(8.3) +0.010, r(41.5) +0.014 over 800 K points",
+      "threshold": "|r| < 0.1",
+      "diagnosis": "",
+      "details": {}
+     },
+     {
+      "id": "A22",
+      "description": "total = E_CF + E_TC; subtracting the analytic E_TC recovers E_CF within 3 MC-SE at every K and both gamma plants (additivity gates the estimator)",
+      "arm": "total",
+      "status": "PASS",
+      "value": "worst |z| 2.00",
+      "threshold": "|z| <= 3",
+      "diagnosis": "",
+      "details": {}
+     }
+    ],
+    "ecf_slopes": {
+     "g8.3": -0.30536275869399787,
+     "g41.5": -0.3042394987266587
+    },
+    "P_true": 1.6139180292614577,
+    "etc_hat": {
+     "g8.3": [
+      0.9604992577703066,
+      0.959327847052915,
+      0.9628582097723302,
+      0.961553946661237
+     ],
+     "g41.5": [
+      0.12046391405842716,
+      0.12042472185845374,
+      0.12055164767391298,
+      0.12037803778480115
+     ]
+    },
+    "reduction_note": "D7: slope arms 192 reps x seeds 0-2 (G07 spec 512 x 5, REDUCED; tolerances unchanged, measured deviations 0.004-0.03); A19 Hill keeps its spec 5 seeds"
+   }
+  ],
+  "paper_context_quoted": {
+   "never_asserted": true,
+   "per_backbone_slopes": {
+    "ViT-IN21K": [
+     -0.141,
+     [
+      -0.179,
+      -0.103
+     ],
+     0.93
+    ],
+    "DINOv2": [
+     -0.099,
+     [
+      -0.131,
+      -0.067
+     ],
+     0.96
+    ],
+    "CLIP": [
+     -0.118,
+     [
+      -0.152,
+      -0.084
+     ],
+     0.95
+    ]
+   },
+   "pooled_12": [
+    -0.115,
+    [
+     -0.128,
+     -0.102
+    ],
+    0.97
+   ],
+   "pooled_16": [
+    -0.119,
+    [
+     -0.134,
+     -0.105
+    ],
+    0.96
+   ],
+   "F_interaction": [
+    2.14,
+    0.199,
+    "(2,6)"
+   ],
+   "falsification_targets": {
+    "contains": -0.125,
+    "excludes": [
+     -0.0625,
+     -0.089
+    ]
+   },
+   "bootstrap_resamples": 1000,
+   "ecf_slopes": {
+    "clipped": [
+     -0.312,
+     -0.298
+    ],
+    "unclipped": [
+     -0.104,
+     -0.098
+    ]
+   },
+   "alpha_hats": [
+    1.32,
+    1.28,
+    1.35
+   ],
+   "mardia_pass_typical": [
+    0.75,
+    0.95
+   ]
+  },
+  "decisions": [
+   "D1 bootstrap unit=config stratified by backbone (OWNER-ASK #8 resolved)",
+   "D2 anchors own intercept group in the 16-config fit",
+   "D3 A17 median-center reading (mean ungated, recorded)",
+   "D4 Hill on max-abs coordinate gradient norms",
+   "D5 warm-up eta=1/(2*beta)",
+   "D6 A18 gated at alpha<2",
+   "D7 EX6-8 192 reps x seeds 0-2 (spec 512x5, labeled)"
+  ]
+ },
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "machine": "AMD64",
+  "platform": "Windows-11-10.0.26300-SP0"
+ },
+ "code_version": "731a0ca1b8b9e37f",
+ "inputs": {
+  "gaussian_model": "dbd23d9603b3c6d3"
+ },
+ "derived_tables": [
+  "tab:slope-fits (structure only; values planted)"
+ ],
+ "drift_notes": [
+  "derive_seed imported from core.gaussian_model (conftest SEED=0 policy)."
+ ]
+}

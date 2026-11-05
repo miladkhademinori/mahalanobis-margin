@@ -1,0 +1,5 @@
+1{,}000 resamples
+12 pretrained configurations
+-1/8 = -0.125 operational
+-1/16 = -0.0625 conservative
+population: payload _selftest/paperA_results.json; provenance ['synthetic']; 6 of 12 roster configurations; 2 of 4 random anchors; synthetic preview: NOT A PAPER NUMBER

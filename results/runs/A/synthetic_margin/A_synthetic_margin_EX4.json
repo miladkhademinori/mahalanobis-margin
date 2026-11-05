@@ -1,0 +1,623 @@
+{
+ "run_id": "A_synthetic_margin_EX4",
+ "paper": "A",
+ "experiment": "synthetic_margin",
+ "provenance": "synthetic",
+ "created_utc": "2026-10-22T05:46:26Z",
+ "executed_utc": "2026-10-22T05:45:25Z",
+ "schema": "G08-S2-proposal (G01 not yet reconciled; see G08 log S7.1)",
+ "config": {
+  "ex1_T": 10,
+  "ex1_d": 32,
+  "ex1_draws": 200,
+  "ex2_T": 10,
+  "ex2_C": 10,
+  "ex2_p": 32,
+  "ex2_gamma_lo": 4.0,
+  "ex2_gamma_hi": 48.0,
+  "ex2_n_gamma": 12,
+  "ex2_nu": [
+   0.0,
+   0.13,
+   0.23,
+   0.42,
+   0.49,
+   0.51,
+   0.73,
+   0.9
+  ],
+  "ex2_n_mc": 200000,
+  "ex2_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex3_gamma_lo": 16.0,
+  "ex3_gamma_hi": 256.0,
+  "ex3_n_gamma": 10,
+  "ex3_nu": [
+   0.0,
+   0.13,
+   0.23,
+   0.42,
+   0.49,
+   0.51,
+   0.5857864376269049,
+   0.73,
+   0.9
+  ],
+  "ex3_C": 10,
+  "ex3_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex3_doubling_gammas": [
+   16.0,
+   32.0,
+   64.0,
+   128.0
+  ],
+  "ex4_T": 10,
+  "ex4_C": 10,
+  "ex4_p": 32,
+  "ex4_gammas": [
+   5.2,
+   12.1,
+   18.9,
+   31.4,
+   39.1,
+   51.8
+  ],
+  "ex4_n_stats": 2000,
+  "ex4_n_eval": 100000,
+  "ex4_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex4_a10_gamma": 5.2,
+  "ex4_a10_n": [
+   250,
+   1000,
+   4000
+  ],
+  "ex5_T": 10,
+  "ex5_C": 10,
+  "ex5_p": 32,
+  "ex5_ladder": [
+   0.12,
+   0.13,
+   0.15,
+   0.17,
+   0.19,
+   0.23,
+   0.26,
+   0.42,
+   0.49,
+   0.51,
+   0.586,
+   0.73
+  ],
+  "ex5_n_est": 2000,
+  "ex5_seeds": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "ex5_C_aux": 100
+ },
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "metrics": {
+  "suite": "EX4",
+  "theorem": "Theorem 3.2 limit (LDA check: TC gap < 1e-10; identical heads under shared statistics)",
+  "status": "PASS",
+  "assertions": [
+   {
+    "id": "EX4.1",
+    "description": "(A9) shared-statistics LDA check: |TC gap| < 1e-10 (pilot: exactly 0.0 -- identical heads; solver-limited)",
+    "arm": "EXACT (bit-identity; CRN eval)",
+    "status": "PASS",
+    "value": "gap exactly 0.0 on all 30 (gamma, seed) configs; predictions bit-identical: True",
+    "threshold": "< 1e-10",
+    "diagnosis": "",
+    "details": {
+     "note": "measured floor is float64 roundoff (~1e-16 scale); the check is solver-limited, precisely the paper's 'attaining the feasibility limit' reading",
+     "gammas": [
+      5.2,
+      12.1,
+      18.9,
+      31.4,
+      39.1,
+      51.8
+     ]
+    }
+   },
+   {
+    "id": "EX4.2",
+    "description": "(A10) independent-estimation arm: head difference ||W_A - W_B||_inf decays ~ n^{-1/2} (the estimation-noise regime printed alongside the bit-exact identity check)",
+    "arm": "EMPIRICAL (5 seeds, SE in details)",
+    "status": "PASS",
+    "value": "head-diff log-log slope -0.507 over n in [250, 1000, 4000]; mean ||dW||inf 0.1859, 0.0923, 0.0456; error-gap slope -0.070 (flat, see diagnosis)",
+    "threshold": "slope in [-0.75, -0.25]",
+    "diagnosis": "",
+    "details": {
+     "rows": [
+      {
+       "n_per_class": 250,
+       "mean_gap": 0.0006819999999999826,
+       "sd_gap": 0.0005414517522365452,
+       "mean_dW": 0.18587965776449542,
+       "sd_dW": 0.02426582489803837,
+       "gaps": [
+        0.00084,
+        0.00146,
+        0.00031,
+        5e-05,
+        0.00075
+       ],
+       "dWs": [
+        0.16603,
+        0.16891,
+        0.17655,
+        0.2251,
+        0.19281
+       ]
+      },
+      {
+       "n_per_class": 1000,
+       "mean_gap": 0.0009959999999999969,
+       "sd_gap": 0.0005123280199247954,
+       "mean_dW": 0.09230247169276054,
+       "sd_dW": 0.009674824695951458,
+       "gaps": [
+        0.00155,
+        0.00087,
+        0.00124,
+        0.00019,
+        0.00113
+       ],
+       "dWs": [
+        0.09829,
+        0.10542,
+        0.09044,
+        0.08101,
+        0.08635
+       ]
+      },
+      {
+       "n_per_class": 4000,
+       "mean_gap": 0.000562000000000018,
+       "sd_gap": 0.00034945672121162704,
+       "mean_dW": 0.0455737597127387,
+       "sd_dW": 0.002926124189841765,
+       "gaps": [
+        0.00016,
+        0.00091,
+        0.0009,
+        0.00058,
+        0.00026
+       ],
+       "dWs": [
+        0.04976,
+        0.04709,
+        0.04213,
+        0.04455,
+        0.04434
+       ]
+      }
+     ],
+     "gamma": 5.2,
+     "error_gap_note": "|err_A - err_B| is second-order flat (slope -0.070): at the Bayes head the error is stationary, so the first-order head noise cancels; the measured error gaps (0.0007, 0.0010, 0.0006) sit at the MC difference floor (~6e-4 at n_eval=1e5). G07's A10 'gap is O(n^{-1/2})' is true in head space, not in error space; drift-recorded."
+    }
+   }
+  ],
+  "summary": {
+   "identity_rows": [
+    {
+     "gamma": 5.2,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.9401,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 5.2,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.94105,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 5.2,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.9412,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 5.2,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.94139,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 5.2,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.94184,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 12.1,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.90818,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 12.1,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.90601,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 12.1,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.90585,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 12.1,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.90739,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 12.1,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.90721,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 18.9,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.88757,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 18.9,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.88693,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 18.9,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.8882,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 18.9,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.88665,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 18.9,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.8848,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 31.4,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86939,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 31.4,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86996,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 31.4,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.87054,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 31.4,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.87063,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 31.4,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.87171,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 39.1,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86251,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 39.1,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86152,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 39.1,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86395,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 39.1,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86381,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 39.1,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.86148,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 51.8,
+     "seed": 0,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.8572,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 51.8,
+     "seed": 1,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.85695,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 51.8,
+     "seed": 2,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.8575,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 51.8,
+     "seed": 3,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.85353,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    },
+    {
+     "gamma": 51.8,
+     "seed": 4,
+     "preds_identical": true,
+     "gap": 0.0,
+     "err": 0.85326,
+     "common_shift": 2.302585,
+     "note": "heads are the same function: per-task prior constant log(1/C) equals the joint log(1/N) up to the common shift log(N/C), which cannot change argmax"
+    }
+   ],
+   "a10_rows": [
+    {
+     "n_per_class": 250,
+     "mean_gap": 0.0006819999999999826,
+     "sd_gap": 0.0005414517522365452,
+     "mean_dW": 0.18587965776449542,
+     "sd_dW": 0.02426582489803837,
+     "gaps": [
+      0.00084,
+      0.00146,
+      0.00031,
+      5e-05,
+      0.00075
+     ],
+     "dWs": [
+      0.16603,
+      0.16891,
+      0.17655,
+      0.2251,
+      0.19281
+     ]
+    },
+    {
+     "n_per_class": 1000,
+     "mean_gap": 0.0009959999999999969,
+     "sd_gap": 0.0005123280199247954,
+     "mean_dW": 0.09230247169276054,
+     "sd_dW": 0.009674824695951458,
+     "gaps": [
+      0.00155,
+      0.00087,
+      0.00124,
+      0.00019,
+      0.00113
+     ],
+     "dWs": [
+      0.09829,
+      0.10542,
+      0.09044,
+      0.08101,
+      0.08635
+     ]
+    },
+    {
+     "n_per_class": 4000,
+     "mean_gap": 0.000562000000000018,
+     "sd_gap": 0.00034945672121162704,
+     "mean_dW": 0.0455737597127387,
+     "sd_dW": 0.002926124189841765,
+     "gaps": [
+      0.00016,
+      0.00091,
+      0.0009,
+      0.00058,
+      0.00026
+     ],
+     "dWs": [
+      0.04976,
+      0.04709,
+      0.04213,
+      0.04455,
+      0.04434
+     ]
+    }
+   ],
+   "a10_slope": -0.5070233986681889
+  },
+  "runtime_s": 61.1,
+  "config": {
+   "gammas": [
+    5.2,
+    12.1,
+    18.9,
+    31.4,
+    39.1,
+    51.8
+   ],
+   "n_stats": 2000,
+   "n_eval": 100000,
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "a10_gamma": 5.2,
+   "a10_n": [
+    250,
+    1000,
+    4000
+   ],
+   "reduced": false
+  }
+ },
+ "env": {
+  "python": "3.12.10",
+  "numpy": "2.5.2",
+  "scipy": "1.18.0",
+  "machine": "AMD64",
+  "platform": "Windows-11-10.0.26300-SP0"
+ },
+ "code_version": "292736b2ec1d958d",
+ "inputs": {
+  "margin": "e33ef149e8f256ee",
+  "streaming": "ddd6c837dad515c7",
+  "gaussian_model": "dbd23d9603b3c6d3",
+  "diagnostic": "62b43609bf7cdd4f"
+ },
+ "derived_tables": [],
+ "drift_notes": [
+  "H01 core.gaussian_model imported (seed policy reused).",
+  "H04 core.diagnostic.gamma_ij imported (exact-arm oracle).",
+  "I01 core.margin imported; using: ['block_loss_matrix', 'e_tc_bound', 'gamma_ij_pairwise', 'gamma_min_population', 'nu_spread_ratio', 'tc_gap'] (local algebra = labeled fallback only).",
+  "I02 core.streaming present: SKELETON at I03 run time (EX1-EX5 need no streaming; noted for provenance).",
+  "G07-A6 drift: aligned-geometry exact exponent -(1-nu/2)^2/8 is steeper than the interpolating -(1-nu)/8 by nu^2/32, so the stated 0.005 tolerance can only hold for nu <= 0.4 (G07's own pilots imply this); kept as stated with honest FAIL + corrected pointwise ratio assertion.",
+  "G07-A8 drift: the doubling bracket's 1.2 slack is smaller than the Gaussian-tail prefactor factor ~2^{-1/4} per doubling; corrected local-exponent bracket gated alongside.",
+  "G07-A12 drift: the planted 12-row ladder has THREE rows > 1/2 (0.51, 0.586, 0.73), so the operational count is 9/12, not 10/12 (the 10/12 figure mirrors the paper's real Table 4, L3142).",
+  "G07-EX3 pattern: G07's pilot slopes are reproduced exactly by the two-point aligned pattern (C/2 classes at +-s_max); a jittered full-spread pattern adds sibling-class transient contamination up to 0.014 at nu=0.586 over [16,256]. Two-point adopted (deterministic).",
+  "EX2/EX3 head-class finding: the per-task softmax-calibrated head has an x-dependent bias (outside ass:ncm-head) and its cross-task confusion does NOT decay with the margin (E_TC -> 1, slope ~ +1e-4); it is run as a labeled extension arm; the in-scope generative CF head attains gap exactly 0 (feasibility limit) -- consistent with Remark on generative methods (L652-663) and Remark 4.5 scoping."
+ ]
+}

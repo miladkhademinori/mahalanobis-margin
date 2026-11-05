@@ -1,0 +1,23 @@
+{
+ "created_utc": "2026-10-22T12:30:30Z",
+ "emitter": "pipeline.tables.predictor_text",
+ "g08_class": "POST-HOC text fragment (Section 8, four R2/F cells)",
+ "gates": [
+  {
+   "detail": "synthetic preview: NOT A PAPER NUMBER",
+   "name": "predictor R2/F cells (N23 S2)",
+   "status": "not-evaluated"
+  }
+ ],
+ "label": "predictor",
+ "mode": "build",
+ "paper": "A",
+ "provenance": [
+  "synthetic"
+ ],
+ "store_note": "real predictor inputs MISSING per A_predictor_regression_CI1 (suite_status INPUTS_MISSING); this fragment is the payload preview",
+ "supporting_runs": [
+  "A_predictor_regression_CI1"
+ ],
+ "tex_sha256": "8d073aa7935b580275dac19a3c8ea8143350e944ca104bcd189994cb80b3739a"
+}

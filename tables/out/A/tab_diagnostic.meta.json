@@ -1,0 +1,14 @@
+{
+ "created_utc": "2026-10-22T12:30:30Z",
+ "emitter": "static rows (G08 S1)",
+ "g08_class": "STATIC",
+ "gates": [],
+ "label": "tab:diagnostic",
+ "mode": "build",
+ "paper": "A",
+ "provenance": [
+  "static"
+ ],
+ "supporting_runs": [],
+ "tex_sha256": "5c9d1f1440a014101f6c6e044103e7a549aa59fc64319fa33ee197bcc0131bf3"
+}

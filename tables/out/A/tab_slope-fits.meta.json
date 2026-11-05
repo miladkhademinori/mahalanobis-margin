@@ -1,0 +1,22 @@
+{
+ "created_utc": "2026-10-22T12:30:30Z",
+ "emitter": "pipeline.tables.tab_slope_fits",
+ "g08_class": "POST-HOC",
+ "gates": [
+  {
+   "detail": "outside the local store",
+   "name": "ratify -0.115 canonical vs -0.119 (owner ruling)",
+   "status": "pending-owner-ruling"
+  }
+ ],
+ "label": "tab:slope-fits",
+ "mode": "build",
+ "paper": "A",
+ "provenance": [
+  "synthetic"
+ ],
+ "supporting_runs": [
+  "A_slope_fits_synthetic"
+ ],
+ "tex_sha256": "a0bfb3ab5e50b025b202f742d37a6a03d64138f82b801ad6ec9640c287a45f05"
+}

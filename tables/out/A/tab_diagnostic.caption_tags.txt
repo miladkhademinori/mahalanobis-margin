@@ -1,0 +1,1 @@
+population: fixed text, zero data (G08 S1 STATIC)

@@ -1,0 +1,14 @@
+{
+ "created_utc": "2026-10-22T12:30:30Z",
+ "emitter": "pipeline.tables.tab_random_anchor",
+ "g08_class": "POST-HOC",
+ "gates": [],
+ "label": "tab:random-anchor",
+ "mode": "build",
+ "paper": "A",
+ "provenance": [
+  "synthetic"
+ ],
+ "supporting_runs": [],
+ "tex_sha256": "2e31f9d0d9e9d745f0aeb263831d89b890ab71f196ac0faf937b570a78527e55"
+}

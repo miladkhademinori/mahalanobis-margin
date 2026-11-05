@@ -1,0 +1,14 @@
+{
+ "created_utc": "2026-10-22T12:30:30Z",
+ "emitter": "pipeline.tables.tab_residual_check",
+ "g08_class": "POST-HOC",
+ "gates": [],
+ "label": "tab:residual-check",
+ "mode": "build",
+ "paper": "A",
+ "provenance": [
+  "synthetic"
+ ],
+ "supporting_runs": [],
+ "tex_sha256": "57936ca3dd43ce98ea036695a242c14fb5c32e92891c93074df7f9d39bbd1653"
+}

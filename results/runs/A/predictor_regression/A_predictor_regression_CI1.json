@@ -1,0 +1,170 @@
+{
+ "run_id": "A_predictor_regression_CI1",
+ "paper": "A",
+ "experiment": "predictor_regression",
+ "created_utc": "2026-10-22T07:09:19Z",
+ "provenance": "printed_inputs_partial",
+ "script": "experiments/predictor_regression.py",
+ "ruling": "REPLY_FROM_CLAUDE_REPLICATION.md sec.3 (Q5), 2026-10-22",
+ "self_test": [
+  "PASS q positive (=1) ",
+  "PASS dR2 positive dR2=0.1243",
+  "PASS F positive ",
+  "PASS F equals R2-form closed form ",
+  "PASS p matches scipy ",
+  "PASS sign convention pinned (full-minus-reduced) ",
+  "PASS identity oracle F(1,8)~5.845 at p=0.042 F=5.8465 vs isf=5.8453",
+  "PASS identity oracle p ",
+  "PASS reduced df (2,9) ",
+  "PASS full df (3,8) ",
+  "PASS nested df (1,8) ",
+  "PASS interaction df (2,6) ",
+  "PASS LODO has 4 refits ",
+  "PASS interaction full k=6 implicit "
+ ],
+ "suite_status": "INPUTS_MISSING",
+ "input_audit": {
+  "cells": [
+   {
+    "backbone": "ViT-B/16-IN21K",
+    "dataset": "CIFAR-100",
+    "gamma_min": "printed",
+    "final_acc": "printed(tab:main,ours)",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "ViT-B/16-IN21K",
+    "dataset": "ImageNet-R",
+    "gamma_min": "printed",
+    "final_acc": "printed(tab:main,ours)",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "ViT-B/16-IN21K",
+    "dataset": "CUB-200",
+    "gamma_min": "printed",
+    "final_acc": "printed(tab:main,ours)",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "ViT-B/16-IN21K",
+    "dataset": "OmniBenchmark",
+    "gamma_min": "printed",
+    "final_acc": "printed(tab:main,ours)",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "DINOv2-ViT-B/14",
+    "dataset": "CIFAR-100",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "DINOv2-ViT-B/14",
+    "dataset": "ImageNet-R",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "DINOv2-ViT-B/14",
+    "dataset": "CUB-200",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "DINOv2-ViT-B/14",
+    "dataset": "OmniBenchmark",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "CLIP-ViT-B/16",
+    "dataset": "CIFAR-100",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "CLIP-ViT-B/16",
+    "dataset": "ImageNet-R",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "CLIP-ViT-B/16",
+    "dataset": "CUB-200",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   },
+   {
+    "backbone": "CLIP-ViT-B/16",
+    "dataset": "OmniBenchmark",
+    "gamma_min": "printed",
+    "final_acc": "MISSING",
+    "linprobe": "MISSING",
+    "ncm": "MISSING"
+   }
+  ],
+  "missing_counts": {
+   "gamma_min": 0,
+   "final_acc": 8,
+   "linprobe": 12,
+   "ncm": 12
+  },
+  "fit_runnable": false
+ },
+ "printed_targets": {
+  "r2_single_margin": {
+   "line": 1264,
+   "value": 0.88
+  },
+  "r2_single_linprobe": {
+   "line": 1264,
+   "value": 0.85
+  },
+  "r2_single_ncm": {
+   "line": 1265,
+   "value": 0.72
+  },
+  "delta_r2": {
+   "line": 1268,
+   "value": 0.06
+  },
+  "nested_p": {
+   "line": 1268,
+   "value": 0.042
+  },
+  "interaction_F_2_6": {
+   "line": 1252,
+   "value": 2.14
+  },
+  "interaction_p": {
+   "line": 1252,
+   "value": 0.199
+  }
+ },
+ "missing_inputs": {
+  "linprobe_accuracy": "0/12 printed anywhere in the TeX (only summary R2=0.85, line 1264)",
+  "ncm_accuracy": "0/12 printed anywhere in the TeX (only summary R2=0.72, line 1265)",
+  "final_class_il_accuracy": "4/12 printed (tab:main line 5176 'ours', ViT-B/16-IN21K only); DINOv2 and CLIP rows printed nowhere",
+  "gamma_min_accuracy": "12/12 printed (tab:gamma-min, lines 4701-4703)"
+ },
+ "owner_fetch": "Supply experiments rows: linprobe (12), ncm (12), final_acc for DINOv2-ViT-B/14 and CLIP-ViT-B/16 (4+4); also rule which method's final accuracy is the response (tab:main 'ours' vs bank runs.csv final-task accuracy). Then rerun with --inputs."
+}
