@@ -279,7 +279,7 @@ def test_fingerprint_moments_match_classstats_and_grid_runs():
 
 def test_drift_readback_worlds(tmp_path):
     """summarize_drift + readback: linear-in-eta synthetic trajectories land in world H; a non-collapsing largest
-    rate lands in world D; check C2 flags the accepted 14.2 against gamma0/(2|m|) = 25.6 from the accepted inputs."""
+    rate lands in world D; check C2 flags the printed t*(1e-5) = 14.2 against gamma0/(2|m|) = 25.62 from the printed drift inputs."""
     import json
     import numpy as np
     from pipeline import drift as D

@@ -352,8 +352,8 @@ def run_all(root: Path, out_dir: Path, seeds=R.SEEDS, optimizer="adamw", K_metho
             ranpac_M=10000, device=None, protocol=None, schedule: str = "printed", log=print) -> dict:
     """Drive every Paper A measurement over the available caches.  ``protocol`` overrides the AdamW head protocol
     (R.HEAD_PROTOCOL["A"]); the selftest shortens its epochs, the real run leaves it alone.  ``schedule`` picks the
-    Algorithm 1 stage-0 schedule for the clipped-SGD arms: "printed" (the accepted Proposition 5.3) or "consistent"
-    (the units-consistent one of docs/THEORY_NOTES.md); both are recorded in the rows."""
+    Algorithm 1 stage-0 schedule for the clipped-SGD arms: "printed" (the paper's Proposition 5.3 as printed) or "consistent"
+    (the units-consistent reading); both are recorded in the rows."""
     out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
     protocol = protocol or R.HEAD_PROTOCOL["A"]
     dev = _backend.describe(device)

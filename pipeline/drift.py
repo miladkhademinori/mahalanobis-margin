@@ -202,7 +202,7 @@ def summarize_drift(runs: List[dict]) -> dict:
         ll = np.polyfit(np.log([l for l, _ in fitted]), np.log([m for _, m in fitted]), 1)[0]
         out["loglog_slope_abs_m_vs_lr"] = dict(value=float(ll), n_points=len(fitted))
     if len(fitted) >= 3:
-        # the accepted text's correlation statistic, kept for the ledger only; three points make it uninformative
+        # the paper's printed correlation statistic, kept for the ledger only; three points make it uninformative
         out["corr_log_slope_log_lr"] = float(np.corrcoef(np.log([m for _, m in fitted]), np.log([l for l, _ in fitted]))[0, 1])
     elif len(fitted) == 2:
         (l0, m0), (l1, m1) = fitted
@@ -215,7 +215,7 @@ def summarize_drift(runs: List[dict]) -> dict:
 # scored from paperA_drift.json alone (C3 also reads paperA_results.json when given).  Writes DRIFT_READBACK.md.
 # ----------------------------------------------------------------------------------------------------------------
 
-ACCEPTED_DRIFT = {  # the accepted text's values, for the ledger only (never printed as regenerated)
+ACCEPTED_DRIFT = {  # the paper's printed values, for the ledger only (never printed as regenerated)
     "gamma0": 8.20, "slope_1e-05": -0.16, "slope_0.0001": -1.73, "ttf_0.001": 0.48,
     "tstar": {"1e-05": 14.2, "0.0001": 2.35, "0.001": 0.21}, "crossover_0.0001": 3.18, "ratio_per_decade": 10.5,
 }
@@ -271,11 +271,11 @@ def readback(drift_json: Path, out_path: Path, results_json: Path | None = None,
     # P6 log-log slope of |m| against eta
     ll = S.get("loglog_slope_abs_m_vs_lr")
     row("P6", "log-log slope of |m| against eta in [0.7, 1.3] (linear-in-eta prediction)", "NOT-RUN" if not ll else ("HIT" if 0.7 <= ll["value"] <= 1.3 else "MISS"), ll, "[0.7, 1.3]; n_points reported")
-    # P7 relative pre-floor slope at the middle rate of the accepted order (-1.73 / 8.20 = -0.21 per stage)
+    # P7 relative pre-floor slope at the middle rate of the printed ordering (-1.73 / 8.20 = -0.21 per stage)
     rel = {key[lr]: S[key[lr]]["slope_prefloor_over_gamma0"]["mean"] for lr in lrs}
     cand = [v for v in rel.values() if fin(v)]
     hit7 = any(-0.35 <= v <= -0.10 for v in cand) if cand else None
-    row("P7", "some fitted rate has pre-floor slope / gamma0 in [-0.35, -0.10] per stage (the accepted order at 1e-4)", "NOT-RUN" if hit7 is None else ("HIT" if hit7 else "MISS"), rel, "[-0.35, -0.10]")
+    row("P7", "some fitted rate has pre-floor slope / gamma0 in [-0.35, -0.10] per stage (the printed ordering at 1e-4)", "NOT-RUN" if hit7 is None else ("HIT" if hit7 else "MISS"), rel, "[-0.35, -0.10]")
     # P8 frozen-head comparator coincides across learning rates per seed
     by_seed = {}
     for r in runs:
@@ -296,9 +296,9 @@ def readback(drift_json: Path, out_path: Path, results_json: Path | None = None,
         a, b = S[key[lr]]["t_star_linear"]["mean"], S[key[lr]]["t_star_observed"]["mean"]
         if fin(a) and fin(b) and b > 0:
             chk("C1", f"t*_linear against t*_observed at eta = {lr:g} within 15 percent", "PASS" if abs(a - b) / b <= 0.15 else "FLAG", dict(linear=a, observed=b))
-    # C2 the accepted 14.2 against the accepted slope and gamma0
+    # C2 the printed 14.2 against the printed slope and gamma0
     acc_lin = ACCEPTED_DRIFT["gamma0"] / (2 * abs(ACCEPTED_DRIFT["slope_1e-05"]))
-    chk("C2", "accepted t*(1e-5) = 14.2 against gamma0/(2|m|) from the accepted 8.20 and -0.16", "FLAG" if abs(acc_lin - ACCEPTED_DRIFT["tstar"]["1e-05"]) > 0.15 * acc_lin else "PASS", dict(accepted=14.2, linear_from_accepted=round(acc_lin, 2)))
+    chk("C2", "printed t*(1e-5) = 14.2 against gamma0/(2|m|) from the printed 8.20 and -0.16", "FLAG" if abs(acc_lin - ACCEPTED_DRIFT["tstar"]["1e-05"]) > 0.15 * acc_lin else "PASS", dict(accepted=14.2, linear_from_accepted=round(acc_lin, 2)))
     # C3 gamma0 against the table value for the same configuration
     g0 = S[key[lrs[0]]]["gamma0"]["mean"]; tab = None
     if results_json and Path(results_json).exists():

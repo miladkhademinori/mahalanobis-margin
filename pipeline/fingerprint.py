@@ -6,7 +6,7 @@ Feature caches only, minutes on CPU, no training. For every cached Paper A confi
 gamma_min under a grid of estimator conventions (shrinkage, ridge, standardization, normalization, total
 covariance, subsampled covariance, pair-average covariance, diagonal and Euclidean metrics), under several
 class-ordering generators, and nu / RHS under a grid of formula conventions (numerator statistic, normalizer,
-factor, pair set, denominator), and compares each cell with the values printed in the accepted paper
+factor, pair set, denominator), and compares each cell with the values printed in the paper
 (`registry.PRINTED`). A convention is a candidate only if ONE setting fits all configurations at once; the
 report ranks conventions by their worst-case log-ratio to the printed value across configurations and lists
 the per-backbone mediators (eigenvalue scale, Ledoit-Wolf intensity, feature norm) that decide the direction
