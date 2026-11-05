@@ -16,32 +16,36 @@ Class-incremental learning (class-IL) asks a model to learn new image categories
    exp(−γ_min/8)   at the operational rate (negligible spread),
    exp(−γ_min/(16·κ))   under the full hypothesis set (Theorem 3.6),
 
-   where γ_min is the smallest pairwise Mahalanobis margin between tasks, measured under the backbone's feature metric, and κ is a class-conditioning constant. Empirically observed margins make these bounds numerically meaningful: with margin ≈ 12 the TC gap is bounded by about 22 percent; with margin ≈ 45, by under 0.5 percent (the three-panel figure below walks the geometry).
+   where γ_min is the smallest pairwise Mahalanobis margin between tasks, measured under the backbone's feature metric, and κ is a class-conditioning constant. Empirically observed margins make these bounds numerically meaningful: with margin ≈ 12 the TC gap is bounded by about 22 percent; with margin ≈ 45, by under 0.5 percent (the paper's Figure 3 walks this geometry across three panels).
 3. **The bound decomposes into a diagnostic.** The paper's excess-risk decomposition (Theorem 5.5) splits the class-IL gap into an optimisation term E_CF (controlled by training: the heavy-tailed convergence guarantee of Proposition 5.3) and a representation term E_TC (controlled by the backbone through the margin bound above). The two terms have disjoint dependencies, which yields the paper's practical recipe:
 
    > **Measure γ̂_min in one forward pass to predict E_TC. Monitor the gradient tail index to predict E_CF. Freeze the backbone before the critical horizon t\*.**
 
-Everything in this repository exists to verify those three statements computationally.
+4. **The bound, measured on the real grid.** Within the formal LDA scope, direct verification on the 12 (backbone, dataset) configurations finds a TC gap below the solver's numerical resolution (order 1e-10) in every configuration, attaining the feasibility limit - with the caveat that this check is an identity by construction: the LDA heads are identical under any task partition, because the pooled within-class covariance depends only on class-conditional geometry. On softmax cross-entropy heads, which sit outside the formal scope, the pooled slope of log TC gap against γ̂_min measures -0.012 (95% CI [-0.019, -0.004]): negative as predicted, about one tenth of the operational -1/8. The within-task spread condition (S') does not hold on these configurations (measured spread ratios 2.1 to 4.7 against the required 1/2), so the paper reports the bound with its measured exponent. The accepted-run pooled estimate (-0.115, bootstrap 95% CI [-0.128, -0.102]) is preserved in the provenance ledger (`tables/out/DIFF.md`, and the quoted-context block of `experiments/slope_fits.py`) as printed-reference context under the store's quoted-context discipline.
+
+Everything in this repository exists to verify the statements above computationally.
 
 ---
 
 ## 2. The figures, and what each one shows
 
-![The Mahalanobis margin geometry](figures/fig1_gamma_tc.png)
+The paper has seven numbered figures. The four reproduced here are its Figures 4-7, the measurement figures; its Figures 1-3 (the loss-matrix block diagram, the Bhattacharyya geometry and the three-panel margin panorama) are schematic appendix figures and are not reproduced in this repository.
 
-**Figure 1 (the panorama).** The same two-task feature-space geometry at three values of γ_min. At near-overlap (γ_min ≈ 0.3) the original Infeasibility Theorem binds. At moderate separation (γ_min ≈ 12, empirically observed for ViT-B/16-IN21K) the TC gap is bounded by ≈ 22 percent. At clean separation (γ_min ≈ 45, empirically observed for DINOv2-ViT-B/14) the bound falls under 0.5 percent and discriminative class-IL recovers nearly the full performance of joint training.
+![log TC gap against the Mahalanobis margin across the 12 configurations](figures/fig1_gamma_tc.png)
 
-![TC gap versus margin across 12 configurations](figures/fig2_ecf_convergence.png)
+**The paper's Figure 4 (the slope scatter).** log(TC gap) against γ̂_min across the 12 (backbone, dataset) configurations: per-backbone OLS fits with 95% bootstrap bands, the dashed theoretical reference slope -1/8, and the pooled bootstrap estimate in the inset. This is the quantitative core of item 4 above - the measured slope is negative as predicted, about one tenth of the operational -1/8, and the bound is reported with its measured exponent. The paper's printed values and the regenerated fits are reconciled cell by cell in the printed-versus-reproduced ledger (`tables/out/DIFF.md`).
 
-**Figure 2.** The empirical test of the convergence theory: E_CF against the per-stage iteration budget K on log-log axes, for two backbones under clipped and unclipped SGD. The clipped schedule (sub-Gaussian effective regime) converges at the rate Proposition 5.3 predicts for the measured tail index; the backbones coincide at equal budgets despite their γ_min values differing by roughly 5x, confirming that E_CF does not depend on the margin. That is the disjoint-dependencies prediction of Theorem 5.5, measured.
+![E_CF against the per-stage iteration budget K on log-log axes](figures/fig2_ecf_convergence.png)
+
+**The paper's Figure 5 (the E_CF budget sweep).** The empirical test of the convergence theory: E_CF against the per-stage iteration budget K on log-log axes, for two backbones under clipped and unclipped SGD. Under the units-consistent schedule, clipped and unclipped runs decay at comparable rates - any rate improvement from clipping lies below the sweep's resolution, and which schedule, if any, recovers an in-regime rate remains open (paper §8 and §K.2). What the sweep establishes is the disjoint-dependencies prediction of Theorem 5.5, measured: the two backbones' E_CF curves coincide at equal budgets - within 5 percent at the largest budget - despite their γ_min values differing by roughly 5x, so E_CF does not depend on the margin.
 
 ![Drift trajectories](figures/fig3_drift_trajectory.png)
 
-**Figure 3.** The representation-drift study: fine-tuning the backbone at three learning rates, the margin decays along the predicted trajectory; per-stage slopes at the two smaller rates follow the linear-in-learning-rate prediction, and the largest rate saturates to a measurable time-to-floor. This is the empirical side of the drift bound and the origin of the "freeze the backbone before t\*" half of the diagnostic.
+**The paper's Figure 6 (drift trajectories).** The representation-drift study: fine-tuning the backbone at three learning rates, the margin decays along the predicted trajectory; per-stage slopes at the two smaller rates follow the linear-in-learning-rate prediction, and the largest rate saturates to a measurable time-to-floor. This is the empirical side of the drift bound and the origin of the "freeze the backbone before t\*" half of the diagnostic.
 
 ![Accuracy crossover](figures/fig4_accuracy_crossover.png)
 
-**Figure 4.** Final class-IL accuracy across methods and budgets: the diagnostic-guided schedule is competitive with published baselines at the paper's reported budgets, and the accuracy crossover the margin predicts is visible where the bound tightens.
+**The paper's Figure 7 (the accuracy crossover).** Final class-IL accuracy across methods and budgets: the diagnostic-guided schedule is competitive with published baselines at the paper's reported budgets, and the accuracy crossover the margin predicts is visible where the bound tightens.
 
 *(The pooled per-backbone slope fits with confidence intervals, and the anchor tables behind these figures, are regenerated by the table builders in `pipeline/` from the results store; see sections 5 and 6.)*
 
@@ -57,11 +61,11 @@ Everything in this repository exists to verify those three statements computatio
 | `pipeline/` | The real-feature replication pipeline end to end: feature loading, head training (the CF-optimal diagonal-block heads and the joint heads the TC gap is measured between), table builders, figure builders, and the TeX audit that checks every printed table cell in the paper against the value regenerated from the store. |
 | `experiments/` | The experiment drivers: `synthetic_margin` (the closed-form margin verification suites), `synthetic_rate` (the convergence-rate suites), `slope_fits` (the log(TC gap) versus γ_min regressions with bootstrap CIs), `predictor_regression` (the margin against simpler proxies), `drift` (the backbone-fine-tuning study), `falsification` (the falsification battery), and `scoreboard` (the claim-by-claim scorer). |
 | `tests/` | The pytest suites: `test_theory_A.py` checks every theorem identity at machine precision; `test_core`, `test_pipeline`, `test_tables`, `test_features_builders`, `test_runtime`, `test_smoke` and `zbattery.py` cover the modules; `conftest.py` wires the import paths. |
-| `configs/` | The 12-configuration experiment grid (`paper_A_12configs.json` / `.yaml`: 3 backbones x 4 datasets), the anchor configurations, and the seed list. |
+| `configs/` | Scaffolding placeholders, not live configuration: `paper_A_12configs.json` / `.yaml`, `paper_A_anchors` and `seeds` are G09 skeleton files stamped NOT_IMPLEMENTED_YET (2026-10-21) that reserve the 3-backbones x 4-datasets grid, the anchor configurations and the seed list; no values are populated yet (the grid itself is enumerated by the `replicate.py features` flags and the Colab notebooks; see section 6). |
 | `results/` | The results store. Every run is a JSON payload under `results/runs/<family>/` carrying its configuration, its outputs, and its provenance; `results/INDEX.json` maps run to artifact; `results/CORRECTIONS.md` is the running corrections ledger. Nothing in any table is hand-typed: every number regenerates from a payload in this directory. |
 | `tables/` | Generated table fragments (LaTeX) emitted by the table builders from the store. Regenerate with `python replicate.py tables`. |
 | `colab/` | GPU notebooks for the real-feature stages: `01_features_paperA.ipynb` (feature extraction for the 12 configurations), `04_drift_paperA.ipynb` (the drift study), `06_features_timm_paperA.ipynb` (the timm extraction variant), `03_analyze_tables.ipynb` (analysis). A free-tier Colab T4 suffices. |
-| `figures/` | The paper's four figures, reproduced above. |
+| `figures/` | Four of the paper's seven figures (its Figures 4, 5, 6 and 7), reproduced above. |
 | `tools/` | Maintenance utilities for the store. |
 | `LICENSE` | MIT. |
 
@@ -120,12 +124,12 @@ What each command proves:
 
 ## 6. The real-feature pipeline (GPU, Colab T4)
 
-The real experiments follow the 12-configuration grid in `configs/` (3 backbones x 4 datasets):
+The real experiments cover the 12-configuration grid (3 backbones x 4 datasets). The files in `configs/` are scaffolding placeholders (section 3); the grid is enumerated by the `features` command's backbone and dataset flags and by the Colab notebooks:
 
 1. **Extract frozen features** (`colab/01_features_paperA.ipynb`): each backbone's penultimate features for each benchmark split, saved as feature caches. About 1.5-3 T4-hours for the full grid.
 2. **Compute the class statistics**: per-class means and Ledoit-Wolf-shrinkage pooled covariances from the cached features; the Mahalanobis margin γ̂_min and the conditioning constants follow in one pass (`core/`). This step is CPU-fast.
 3. **Train the heads and measure the TC gap** (`pipeline/`): for each configuration, the CF-optimal diagonal-block head and the joint all-block head are trained to convergence; the empirical TC gap is the test-loss difference between them. The head family, budgets, and schedules are exactly the paper's.
-4. **The slope fits** (`experiments/slope_fits.py`): the log(TC gap) versus γ̂_min regressions with per-backbone OLS fits and 95 percent bootstrap CIs from 1,000 resamples - Figure 1's quantitative core and the paper's headline measurement.
+4. **The slope fits** (`experiments/slope_fits.py`): the log(TC gap) versus γ̂_min regressions with per-backbone OLS fits and 95 percent bootstrap CIs from 1,000 resamples - the quantitative core of the paper's Figure 4 (the first figure above) and the paper's headline measurement: the pooled slope -0.012 (95% CI [-0.019, -0.004]), about one tenth of the operational -1/8 (section 1, item 4).
 5. **The drift study** (`colab/04_drift_paperA.ipynb`, `experiments/drift.py`): fine-tune the backbone at three learning rates and track the margin; roughly 10-17 GPU-hours. This is the heavy stage; everything else is minutes.
 6. **Regenerate and audit every table** (`python replicate.py tables`, then `tables --check`): the table builders emit each LaTeX fragment in `tables/`, and the TeX audit cross-checks every printed cell against the store.
 
@@ -146,11 +150,11 @@ The store under `results/` is organised by run family (`runs/A/`, `runs/drift/`,
 
 | Paper element | Where it is verified |
 |---|---|
-| Infeasibility Theorem (the 2024 ceiling; the companion citation) | The baseline the margins attenuate; the falsification battery checks the boundary behaviour (`experiments/falsification.py`) |
+| Infeasibility Theorem (the 2024 ceiling; the companion citation) | The baseline the margins attenuate; the falsification battery checks the boundary behaviour (`experiments/falsification.py`), and the direct LDA check attains the generative escape - a TC gap below solver resolution (`core/lda_ncm.py`) |
 | Theorem 3.6 (the margin bound, exp(−γ_min/(16κ))) | Closed-form identity suites + Gaussian-model checks (`experiments/synthetic_margin.py`, `tests/test_theory_A.py`) |
 | Corollary 3.9 / the operational rate exp(−γ_min/8) | Same suites at the negligible-spread limit; the fingerprint command ties the constants to the printed values |
 | Theorem 5.5 (the E_CF + E_TC decomposition) | `experiments/synthetic_rate.py` (the E_CF leg at the measured tail index) and the slope fits (the E_TC leg); the disjoint-dependencies prediction is the comparison the table builders emit |
-| Proposition 5.3 (clipped-SGD convergence, heavy tails) | The rate suites: clipped vs unclipped schedules at the measured alpha, exactly Figure 2 |
+| Proposition 5.3 (clipped-SGD convergence, heavy tails) | The rate suites: clipped vs unclipped schedules at the measured alpha, exactly the paper's Figure 5 (the second figure above) |
 | The drift bound and the critical horizon t\* | `experiments/drift.py` + `python replicate.py drift-readback` |
 | The diagnostic recipe | The published-baselines comparison in the table builders |
 
